@@ -1,9 +1,6 @@
 package fanfan.app.view;
  
-import com.fanfan.app.R;
-import com.fanfan.app.R.id;
-import com.fanfan.app.R.layout;
-import com.fanfan.app.R.menu;
+import fanfan.business.app.R; 
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
@@ -20,9 +17,9 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_main); 
 		init(); 
-	}
+	} 
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
