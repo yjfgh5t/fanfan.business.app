@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="libs/jg_filter_sdk_1.1.jar"/>
 	<classpathentry kind="lib" path="libs/okhttp-3.10.0.jar"/>
 	<classpathentry kind="lib" path="libs/okio-1.14.0.jar"/>
+	<classpathentry kind="lib" path="libs/fastjson-1.2.44.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
