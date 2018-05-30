@@ -2,21 +2,21 @@ package fanfan.app.constant;
 
 public class UrlConstant {
 
-	public static String domain="localhost://8081/api/";
+	public static final String domain="http://192.168.0.108:8081/api/";
 	
 	/**
 	 * 登录地址
 	 */
-	public static String loginUrl=domain+"login/";
+	public static final String loginUrl=domain+"user/login";
 	
 	/**
 	 * html版本
 	 */
-	public static String htmlVersion=domain+"version/";
+	public static final String htmlVersion=domain+"/info/version";
 	
 	/**
 	 * 下载html zip
 	 */
-	public static String htmlDownload=domain+"version/www.zip";
+	public static final String htmlDownload=domain+"/info/www.zip";
 	
 }

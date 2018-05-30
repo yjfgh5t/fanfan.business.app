@@ -43,7 +43,7 @@ public class LoginManager {
 		params.put("userPwd", userpwd);
 		
 		//调用接口
-		OkHttpManager.getInstrance().post(UrlConstant.loginUrl, new Response<Boolean>() {
+		OkHttpManager.getInstrance().post(UrlConstant.loginUrl,params, new Response<Boolean>() {
 
 			@Override
 			public void callBack(APIResponse<Boolean> response) {
@@ -53,8 +53,9 @@ public class LoginManager {
 					SPUtils.getInstance().put(SPConstant.userName, params.get("userName").toString());
 					SPUtils.getInstance().put(SPConstant.userPwd, params.get("userPwd").toString());
 				}else {
+					response.setData(false);
 					ToastUtils.showShort("用户名或密码错误");
-				}
+				} 
 				 
 				call.callBack(response);
 			}

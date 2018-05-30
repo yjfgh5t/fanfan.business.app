@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				//验证输入值
-				if(checkEditVal()) {
+				if(!checkEditVal()) {
 					return;
 				}
 				
@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
 					public void callBack(APIResponse<Boolean> response) {
 						// TODO Auto-generated method stub
 						if(response.getData()) {
-							//跳转
+							//跳转 
 						}
 					}
 				}); 
