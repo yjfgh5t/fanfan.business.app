@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.Response;
+import fanfan.app.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -62,7 +63,9 @@ public class OkHttpManager {
 	public <T> void get(String url, Map<String, Object> params, Response<T> response) {
 
 		Request request = buildRequest(url, "GET", params);
-
+		if(request==null) {
+			return;
+		}
 		okHttpClient.newCall(request).enqueue(response);
 	}
 
@@ -84,6 +87,9 @@ public class OkHttpManager {
 	 */
 	public <T> void post(String url, Map<String, Object> params, Response<T> response) {
 		Request request = buildRequest(url, "POST", params);
+		if(request==null) {
+			return;
+		}
 		okHttpClient.newCall(request).enqueue(response);
 	}
 
@@ -96,6 +102,11 @@ public class OkHttpManager {
 	 */
 	private Request buildRequest(String url, String method, Map<String, Object> params) {
 
+		//验证是否有网咯
+		if(!NetworkUtils.isConnected()) {
+			
+		}
+		
 		Request.Builder requestBuilder = new Request.Builder();
 
 		RequestBody formBody = null;
