@@ -5,6 +5,7 @@ import fanfan.app.manager.LoginManager;
 import fanfan.app.manager.OkHttpManager;
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.Response;
+import fanfan.app.util.ActivityUtils;
 import fanfan.app.util.StringUtils;
 import fanfan.app.util.ToastUtils;
 import fanfan.app.util.Utils;
@@ -85,7 +86,8 @@ public class MainActivity extends Activity {
 					public void callBack(APIResponse<Boolean> response) {
 						// TODO Auto-generated method stub
 						if(response.getData()) {
-							//跳转 
+							//跳转
+							ActivityUtils.finishToActivity(WebViewActivity.class, true);
 						}
 					}
 				}); 

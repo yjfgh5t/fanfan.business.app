@@ -5,7 +5,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
-	<string name="empty_username">请输入用户名</string>
-	<string name="empty_userpwd">请输入密码</string>
-	<string name="error_name_pwd">用户名或密码错误</string>
+    <string name="empty_username">请输入用户名</string>
+    <string name="empty_userpwd">请输入密码</string>
+    <string name="error_name_pwd">用户名或密码错误</string>
+    <string name="title_activity_web_view">WebViewActivity</string>
+
 </resources>

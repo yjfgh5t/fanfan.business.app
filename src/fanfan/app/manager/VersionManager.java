@@ -24,7 +24,7 @@ public class VersionManager {
 	//assets 路径
 	static String assetsPath = "file:///android_asset/www.zip";
 	
-	static VersionManager instance;
+	static VersionManager instance; 
 	
 	public static VersionManager getInstrance() {
 		if (instance == null) {
@@ -32,6 +32,10 @@ public class VersionManager {
 		}
 
 		return instance;
+	}
+	
+	public String getIndexPath() {
+		return sdCardPath+"index.html";
 	}
 	
 	/**
