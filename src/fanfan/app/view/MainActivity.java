@@ -15,6 +15,7 @@ import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -68,6 +69,8 @@ public class MainActivity extends Activity {
 		 viewUserName = (EditText) findViewById(R.id.username);
 		 viewUserPwd = (EditText)findViewById(R.id.userpwd); 
 		 
+		 viewUserName.setText("admin");
+		 viewUserPwd.setText("111111");
 		 
 		 //点击事件
 		 viewLogin.setOnClickListener(new View.OnClickListener() {
@@ -86,8 +89,7 @@ public class MainActivity extends Activity {
 					public void callBack(APIResponse<Boolean> response) {
 						// TODO Auto-generated method stub
 						if(response.getData()) {
-							//跳转
-							ActivityUtils.finishToActivity(WebViewActivity.class, true);
+							ActivityUtils.startActivity(new Intent(MainActivity.this, WebViewActivity.class));  
 						}
 					}
 				}); 

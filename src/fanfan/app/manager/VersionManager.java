@@ -1,8 +1,10 @@
 package fanfan.app.manager;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.os.Environment;
@@ -15,27 +17,35 @@ import fanfan.app.util.FileIOUtils;
 import fanfan.app.util.FileUtils;
 import fanfan.app.util.ResourceUtils;
 import fanfan.app.util.SPUtils;
+import fanfan.app.util.Utils;
 import fanfan.app.util.ZipUtils;
 
 public class VersionManager {
 
 	//SDCard 路径 
-	static String sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/www/";
+	static String sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/fanfan.business.app";
+	
+	//www地址
+	static String wwwPath = sdCardPath+"/www";
+	
 	//assets 路径
-	static String assetsPath = "file:///android_asset/www.zip";
+	static String assetsPath = "www.zip";
 	
 	static VersionManager instance; 
 	
 	public static VersionManager getInstrance() {
 		if (instance == null) {
 			instance = new VersionManager();
+			
+			//创建文件夹 
+			FileUtils.createOrExistsDir(wwwPath);  
 		}
-
+		 
 		return instance;
 	}
 	
 	public String getIndexPath() {
-		return sdCardPath+"index.html";
+		return "file://"+wwwPath+"/index.html";
 	}
 	
 	/**
@@ -55,10 +65,15 @@ public class VersionManager {
 		
 		//未安装
 		if(getCurrentHtmlVersion().equals("0.0.0")) {
+			 
+			 String str = ResourceUtils.readAssets2String("www.zip");
+			 
 			//copy assets至SDCard
-			ResourceUtils.copyFileFromAssets(assetsPath, sdCardPath);
-			//解压文件
-			unHtmlZip();
+			Boolean success = ResourceUtils.copyFileFromAssets(assetsPath, wwwPath+"/www.zip");
+			if(success) {
+				//解压文件
+				unHtmlZip();
+			}
 		}else {
 			 
 			OkHttpManager.getInstrance().get(UrlConstant.htmlVersion, new Response<String>(){
@@ -95,10 +110,10 @@ public class VersionManager {
 					byte _byte[] = new byte [response.getData().getContentLength()>1024?1024:response.getData().getContentLength().intValue()];
 					
 					//删除old的压缩包
-					FileUtils.deleteFile(sdCardPath+"www.zip");
+					FileUtils.deleteFile(wwwPath+"/www.zip");
 					
 					//写入至SDCard
-					FileIOUtils.writeFileFromIS(sdCardPath+"www.zip", response.getData().getInputStream());
+					FileIOUtils.writeFileFromIS(wwwPath+"/www.zip", response.getData().getInputStream());
 					
 					//解压文件
 					unHtmlZip();
@@ -110,7 +125,7 @@ public class VersionManager {
 	private  void unHtmlZip() {
 		
 		try {
-			ZipUtils.unzipFile(sdCardPath+"www.zip", sdCardPath);
+		 List<File> files  =	ZipUtils.unzipFile(wwwPath+"/www.zip", wwwPath+"/");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

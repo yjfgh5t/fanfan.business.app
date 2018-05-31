@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import fanfan.app.manager.VersionManager;
+import fanfan.app.util.ResourceUtils;
 import fanfan.business.app.R; 
 
 public class WebViewActivity extends Activity {
@@ -46,8 +47,7 @@ public class WebViewActivity extends Activity {
 	
 	
 	@SuppressLint("NewApi")
-	private void initWebView() {
-		
+	private void initWebView() { 
 		//加载Url地址
 		webView.loadUrl(VersionManager.getInstrance().getIndexPath());
 		 
