@@ -3,6 +3,7 @@ package fanfan.app.view;
 import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.LoginManager;
 import fanfan.app.manager.OkHttpManager;
+import fanfan.app.manager.VersionManager;
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.Response;
 import fanfan.app.util.ActivityUtils;
@@ -38,7 +39,9 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main); 
 		init(); 
-	} 
+		//刷新版本
+		//VersionManager.getInstrance().refshHtmlVersion();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

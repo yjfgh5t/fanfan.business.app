@@ -31,6 +31,8 @@ public class VersionManager {
 	//assets 路径
 	static String assetsPath = "www.zip";
 	
+	static Boolean isRefeash=false;
+	
 	static VersionManager instance; 
 	
 	public static VersionManager getInstrance() {
@@ -40,7 +42,6 @@ public class VersionManager {
 			//创建文件夹 
 			FileUtils.createOrExistsDir(wwwPath);  
 		}
-		 
 		return instance;
 	}
 	
@@ -63,6 +64,12 @@ public class VersionManager {
 	 */
 	public  void refshHtmlVersion() {
 		
+		if(isRefeash) {
+			return;
+		}
+		
+		isRefeash=true;
+		
 		//未安装
 		if(getCurrentHtmlVersion().equals("0.0.0")) {
 			 
@@ -73,6 +80,8 @@ public class VersionManager {
 			if(success) {
 				//解压文件
 				unHtmlZip();
+				//设置版本
+				SPUtils.getInstance().put(SPConstant.htmlVersion, SPConstant.htmlInstallVersion);
 			}
 		}else {
 			 
@@ -84,23 +93,26 @@ public class VersionManager {
 					//当前版本和线上版本不匹配
 					if(response.isSuccess()&&!response.getData().equals(getCurrentHtmlVersion())) {
 						//下载文件
-						downLoadHtmlZip();
+						downLoadHtmlZip(response.getData());
 					}
 				}
 				
-			});
-			
-		} 
+			}); 
+		}
+		
+		isRefeash=false;
 	}
 	
 	/**
 	 * 下载最新Html版本
 	 */
-	private  void downLoadHtmlZip() {
+	private  void downLoadHtmlZip(final String version) {
 		
+		Map<String, Object> params = new HashMap<>(); 
+		params.put("content-type", "file");
 		
 		//下载文件
-		OkHttpManager.getInstrance().get(UrlConstant.htmlDownload, new Response<DownLoadModel>() {
+		OkHttpManager.getInstrance().get(UrlConstant.htmlDownload,params, new Response<DownLoadModel>() {
 
 			@Override
 			public void callBack(APIResponse<DownLoadModel> response) {
@@ -117,6 +129,9 @@ public class VersionManager {
 					
 					//解压文件
 					unHtmlZip();
+					
+					//设置版本
+					SPUtils.getInstance().put(SPConstant.htmlVersion, version);
 				}
 			}
 		});

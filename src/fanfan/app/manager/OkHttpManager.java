@@ -2,6 +2,7 @@ package fanfan.app.manager;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import com.alibaba.fastjson.JSONObject;
 
 import fanfan.app.model.APIResponse;
+import fanfan.app.model.HeadModel;
 import fanfan.app.model.Response;
 import fanfan.app.util.NetworkUtils;
 import okhttp3.Call;
@@ -31,9 +33,7 @@ public class OkHttpManager {
 			return instance;
 		}
 
-		instance = new OkHttpManager();
-
-		OkHttpClient.Builder builder = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS);
+		instance = new OkHttpManager(); 
 
 		okHttpClient = new OkHttpClient();
 
@@ -64,6 +64,7 @@ public class OkHttpManager {
 
 		Request request = buildRequest(url, "GET", params);
 		if(request==null) {
+			response.onFailure(null, new IOException("无法连接网络"));
 			return;
 		}
 		okHttpClient.newCall(request).enqueue(response);
@@ -88,6 +89,7 @@ public class OkHttpManager {
 	public <T> void post(String url, Map<String, Object> params, Response<T> response) {
 		Request request = buildRequest(url, "POST", params);
 		if(request==null) {
+			response.onFailure(null, new IOException("无法连接网络"));
 			return;
 		}
 		okHttpClient.newCall(request).enqueue(response);
@@ -104,8 +106,14 @@ public class OkHttpManager {
 
 		//验证是否有网咯
 		if(!NetworkUtils.isConnected()) {
-			
+			return null;
 		}
+		
+		if(params==null) {
+			params = new HashMap<>();
+		}
+		
+		params.put("head.base", new HeadModel().toString());
 		
 		Request.Builder requestBuilder = new Request.Builder();
 
@@ -130,6 +138,7 @@ public class OkHttpManager {
 					break;
 				case "file":
 					//formBody = RequestBody.create(MediaType.parse("application/octet-stream"),"");
+					params.put("head.is-file", "true");
 					break;
 				}
 				

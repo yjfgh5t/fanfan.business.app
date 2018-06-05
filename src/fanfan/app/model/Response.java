@@ -34,20 +34,19 @@ public abstract class Response<T> implements Callback{
 				//获取泛型类型
 				ParameterizedType parameterizedType  = (ParameterizedType)getClass().getGenericSuperclass();
 				
-				if(parameterizedType.getActualTypeArguments()[0].getClass().getName().equals(DownLoadModel.class.getName())) {
+				if(httpResponse.request()!=null && httpResponse.request().header("is-file")!=null) {
 					//下载文件 
 					DownLoadModel fileModel = new DownLoadModel();
 					fileModel.setContentLength(httpResponse.body().contentLength());
 					//fileModel.setFileName(httpResponse.request().url().);
 					fileModel.setInputStream(httpResponse.body().byteStream());
-					response.setData(fileModel);  
+					response.setData(fileModel);   
 				}else {
 					String responseBody = httpResponse.body().string();
 					//转换
-					response =  JSONObject.parseObject(responseBody, APIResponse.class);
-					response.setSuccess(true);  
+					response =  JSONObject.parseObject(responseBody, APIResponse.class); 
 				}
-			 
+				response.setSuccess(true); 
 			} catch (IOException e) {
 				response.setMsg(e.getMessage());
 				response.setSuccess(false);
@@ -60,9 +59,12 @@ public abstract class Response<T> implements Callback{
 			response.setSuccess(false);
 			response.setMsg("请求失败");
 		}
-
+		
 		//回调
 		callBack(response);
+		
+		//关闭
+		httpResponse.close();
 	}
 	
 }
