@@ -44,7 +44,11 @@ public abstract class Response<T> implements Callback{
 				}else {
 					String responseBody = httpResponse.body().string();
 					//转换
-					response =  JSONObject.parseObject(responseBody, APIResponse.class); 
+					if(responseBody.indexOf("{")==0) {
+						response =  JSONObject.parseObject(responseBody, APIResponse.class);
+					}else {
+						throw new IOException("请求服务出错");
+					}
 				}
 				response.setSuccess(true); 
 			} catch (IOException e) {
@@ -57,7 +61,7 @@ public abstract class Response<T> implements Callback{
 		}else { 
 			response.setCode(-1);
 			response.setSuccess(false);
-			response.setMsg("请求失败");
+			response.setMsg("请求服务出错");
 		}
 		
 		//回调

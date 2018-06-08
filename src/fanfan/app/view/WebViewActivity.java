@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -74,44 +75,72 @@ public class WebViewActivity extends Activity {
 			//get提交
 			@Override
 			@JavascriptInterface
-			public void ajaxGet(String url,Map<String,Object> params,final String callBackKey) {
-				 
-				OkHttpManager.getInstrance().get(UrlConstant.domain+url, params, new Response<Object>() { 
+			public void ajaxGet(final String url,final Map<String,Object> params,final String callBackKey) { 
+				new Handler().post(new Runnable() { 
 					@Override
-					public void callBack(final APIResponse<Object> response) {
-						// TODO Auto-generated method stub 
-						webView.post(new Runnable() {
+					public void run() {
+						// TODO Auto-generated method stub
+						OkHttpManager.getInstrance().get(UrlConstant.domain+url, params, new Response<Object>() { 
 							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								webView.loadUrl((String.format("javascript:callback(%s,%s)",JSON.toJSONString(response),callBackKey)));
+							public void callBack(final APIResponse<Object> response) {
+								webViewCallBack(JSON.toJSONString(response),callBackKey);
 							}
 						});
 					}
+					
 				});
 			}
 			
 			//post提交
 			@Override
 			@JavascriptInterface
-			public void ajaxPost(String url,Map<String,Object> params,final String callBackKey) {
-				 
-				OkHttpManager.getInstrance().post(UrlConstant.domain+url, params, new Response<Object>() { 
+			public void ajaxPost(final String url,final Map<String,Object> params,final String callBackKey) {
+				new Handler().post(new Runnable() {
+
 					@Override
-					public void callBack(final APIResponse<Object>  response) {
-						// TODO Auto-generated method stub 
-						webView.loadUrl((String.format("javascript:callback(%s,%s)",JSON.toJSONString(response),callBackKey)));
+					public void run() {
+						// TODO Auto-generated method stub
+						OkHttpManager.getInstrance().post(UrlConstant.domain+url, params, new Response<Object>() { 
+							@Override
+							public void callBack(final APIResponse<Object>  response) { 
+								// TODO Auto-generated method stub 
+									webViewCallBack(JSON.toJSONString(response),callBackKey);  
+							}
+						});
 					}
-				});
+					
+				}); 
 			}
 			
 			/**
 			 * 获取固定的key
 			 */
 			@JavascriptInterface
-			public Object getKeyVal(String key) { 
-				
-				return SPUtils.getInstance().getString(key);
+			public void getKeyVal(final String key,final String callBackKey) { 
+				new Handler().post(new Runnable() { 
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						webViewCallBack(SPUtils.getInstance().getString(key),callBackKey);
+					}
+				}); 
+			}
+			
+			//回调js方法
+			private void webViewCallBack(final String data,final String callBackKey) {
+				// TODO Auto-generated method stub 
+				webView.post(new Runnable() {
+					@Override
+					public void run() {
+						if(data.indexOf("{")==0) {
+							// 回调js方法
+							webView.loadUrl((String.format("javascript:window.callback(%s,\"%s\")",data,callBackKey)));
+						}else {
+							// 回调js方法
+							webView.loadUrl((String.format("javascript:window.callback(\"%s\",\"%s\")",data,callBackKey)));
+						}
+					}
+				});
 			}
 			
 		} , "android"); 
@@ -142,7 +171,7 @@ public class WebViewActivity extends Activity {
 		 * 获取key val 值
 		 * @param key
 		 */
-		Object getKeyVal(String key);
+		void getKeyVal(String key,final String callBackKey);
 		
 		
 	}
