@@ -1,11 +1,13 @@
 package fanfan.app.view;
  
+
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,10 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import fanfan.app.constant.UrlConstant;
+import fanfan.app.manager.BlueToothManager;
 import fanfan.app.manager.OkHttpManager;
 import fanfan.app.manager.VersionManager;
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.Response;
+import fanfan.app.util.BlueToothUtils;
 import fanfan.app.util.ResourceUtils;
 import fanfan.app.util.SPUtils;
 import fanfan.business.app.R; 
@@ -126,6 +130,31 @@ public class WebViewActivity extends Activity {
 				}); 
 			}
 			
+			/**
+			 * 蓝牙操作
+			 */
+			@Override
+			@JavascriptInterface
+			public void blueTooth(final Boolean start,final String callBackKey) {
+				// TODO Auto-generated method stub
+				new Handler().post(new Runnable() {
+					public void run() {
+						if(start) {
+							BlueToothManager.getInstrance().startScaneBlue(new Response<Object>() {
+								
+								@Override
+								public void callBack(APIResponse<Object> response) {
+									// TODO Auto-generated method stub
+									webViewCallBack(JSON.toJSONString(response), callBackKey);
+								}
+							});
+						}else {
+							BlueToothManager.getInstrance().stopScaneBlue();
+						}
+					}
+				});
+			}
+			
 			//回调js方法
 			private void webViewCallBack(final String data,final String callBackKey) {
 				// TODO Auto-generated method stub 
@@ -142,8 +171,10 @@ public class WebViewActivity extends Activity {
 					}
 				});
 			}
+
+		
 			
-		} , "android"); 
+		} , "android");  
 	}
 	
 	
@@ -173,6 +204,11 @@ public class WebViewActivity extends Activity {
 		 */
 		void getKeyVal(String key,final String callBackKey);
 		
-		
+		/**
+		 * 蓝牙操作
+		 * @param start 开启、停止
+		 * @param callBackKey
+		 */
+		void blueTooth(Boolean start,final String callBackKey);
 	}
 }

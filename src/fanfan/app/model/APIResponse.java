@@ -30,8 +30,16 @@ public class APIResponse<T> {
 		return data;
 	}
 
-	public void setData(T data) {
+	public APIResponse<T> setData(T data) {
 		this.data = data;
+		return this;
+	}
+	
+	public APIResponse<T> success() {
+		 this.setCode(0);
+		 this.setMsg("success");
+		
+		return this;
 	}
 
 	private int code;
