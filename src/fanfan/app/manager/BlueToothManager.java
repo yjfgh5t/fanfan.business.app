@@ -1,10 +1,14 @@
 package fanfan.app.manager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import fanfan.app.model.APIResponse;
+import fanfan.app.model.BlueToothModel;
 import fanfan.app.model.Response;
 import fanfan.app.util.BlueToothUtils;
 import fanfan.app.util.Utils;
@@ -32,12 +36,12 @@ public class BlueToothManager {
 	 * 开始扫描蓝牙
 	 * @param context
 	 */
-	public void startScaneBlue(Response<Object> call) {
+	public void startScaneBlue(Context context, Response<Object> call) {
 		
 		callResponse=call;
 		
 		//设置上下文对象
-		BlueToothUtils.getInstance().setContext(Utils.getApp());
+		BlueToothUtils.getInstance().setContext(context);
 		
 		//设置处理类
 		BlueToothUtils.getInstance().setBTUtilListener(new BTUtilListenerImp());
@@ -58,18 +62,26 @@ public class BlueToothManager {
 		@Override
 		public void onLeScanStart() {
 			// TODO Auto-generated method stub
-			
+			Map<String,String> state =new  HashMap<>();
+			state.put("event", "start");
+			callResponse.callBack(new APIResponse<Object>().success().setData(state));
 		}
 
 		@Override
 		public void onLeScanStop() {
 			// TODO Auto-generated method stub
+			Map<String,String> state =new  HashMap<>();
+			state.put("event", "stop");
+			callResponse.callBack(new APIResponse<Object>().success().setData(state));
 		}
 
 		@Override
-		public void onLeScanDevices(List<BluetoothDevice> listDevice) {
+		public void onLeScanDevices(BluetoothDevice device) {
 			// TODO Auto-generated method stub
-			callResponse.callBack(new APIResponse<Object>().success().setData(listDevice));
+			BlueToothModel  toothModel  = new BlueToothModel();
+			toothModel.setAddress(device.getAddress());
+			toothModel.setName(device.getName());
+			callResponse.callBack(new APIResponse<Object>().success().setData(toothModel));
 		}
 
 		@Override

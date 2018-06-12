@@ -37,6 +37,7 @@ public class APIResponse<T> {
 	
 	public APIResponse<T> success() {
 		 this.setCode(0);
+		 this.setSuccess(true);
 		 this.setMsg("success");
 		
 		return this;

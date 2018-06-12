@@ -17,9 +17,14 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
+import fanfan.app.model.BlueToothModel;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -28,7 +33,7 @@ import java.util.UUID;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BlueToothUtils {
 
-    private static final String TAG = "BleUtil";
+    private static final String TAG = "BlueToothUtils";
     private static final long SCAN_PERIOD = 10000;
 
     public static String characterUUID1 = "0000fff2-0000-1000-8000-00805f9b34fb";//APP发送命令
@@ -87,20 +92,21 @@ public class BlueToothUtils {
             mContext.startActivity(enableBtIntent);*/
         }
     }
-
+    
     //扫描设备的回调
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
 
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi,
                              byte[] scanRecord) {
+        	
             ((Activity) mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (!listDevice.contains(device)) {
                         //不重复添加
-                        listDevice.add(device);
-                        mListener.onLeScanDevices(listDevice);
+                        listDevice.add(device); 
+                        mListener.onLeScanDevices(device);
                         Log.e(TAG, "device:" + device.toString());
                     }
                 }
@@ -279,14 +285,14 @@ public class BlueToothUtils {
         }
     }
 
-    //  断开设备连接
+    //断开设备连接
     private void disConnGatt() {
         if (mGatt != null) {
             mGatt.disconnect();
             mGatt.close();
             mGatt = null;
             listDevice = new ArrayList<>();
-            mListener.onLeScanDevices(listDevice);
+            mListener.onLeScanDevices(null);
         }
     }
 
@@ -303,7 +309,7 @@ public class BlueToothUtils {
 
         void onLeScanStop();  // 扫描停止
 
-        void onLeScanDevices(List<BluetoothDevice> listDevice); //扫描得到的设备
+        void onLeScanDevices(BluetoothDevice blueToothModel); //扫描得到的设备
 
         void onConnected(BluetoothDevice mCurDevice); //设备的连接
 
