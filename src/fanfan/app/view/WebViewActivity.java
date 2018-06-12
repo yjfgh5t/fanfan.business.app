@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothDevice;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,7 +67,7 @@ public class WebViewActivity extends Activity {
 		//加载Url地址
 		//webView.loadUrl(VersionManager.getInstrance().getIndexPath());
 		
-		webView.loadUrl("http://192.168.2.68:8080");
+		webView.loadUrl("http://192.168.0.108:8080");
 		 
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
@@ -135,12 +136,13 @@ public class WebViewActivity extends Activity {
 			 */
 			@Override
 			@JavascriptInterface
-			public void blueTooth(final Boolean start,final String callBackKey) {
+			public void blueTooth(final boolean start,final String callBackKey) {
+				
 				// TODO Auto-generated method stub
 				new Handler().post(new Runnable() {
 					public void run() {
 						if(start) {
-							BlueToothManager.getInstrance().startScaneBlue(new Response<Object>() {
+							BlueToothManager.getInstrance().startScaneBlue(WebViewActivity.this, new Response<Object>() {
 								
 								@Override
 								public void callBack(APIResponse<Object> response) {
@@ -161,6 +163,7 @@ public class WebViewActivity extends Activity {
 				webView.post(new Runnable() {
 					@Override
 					public void run() {
+						Log.d("webview", data);
 						if(data.indexOf("{")==0) {
 							// 回调js方法
 							webView.loadUrl((String.format("javascript:window.callback(%s,\"%s\")",data,callBackKey)));
@@ -209,6 +212,6 @@ public class WebViewActivity extends Activity {
 		 * @param start 开启、停止
 		 * @param callBackKey
 		 */
-		void blueTooth(Boolean start,final String callBackKey);
+		void blueTooth(boolean start,final String callBackKey);
 	}
 }
