@@ -14,7 +14,7 @@ public class HeadModel {
 	public HeadModel() {
 		this.clientType="Android";
 		this.userId=-1;
-		this.customerId=SPUtils.getInstance().getInt(SPConstant.userId,-1);
+		this.customerId=SPUtils.getInstance().getInt(SPConstant.userId,1);
 	}
 	
 	@Override

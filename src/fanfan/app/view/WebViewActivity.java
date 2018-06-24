@@ -4,6 +4,7 @@ package fanfan.app.view;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -80,7 +81,8 @@ public class WebViewActivity extends Activity {
 			//get提交
 			@Override
 			@JavascriptInterface
-			public void ajaxGet(final String url,final Map<String,Object> params,final String callBackKey) { 
+			public void ajaxGet(final String url,final String jsonParams,final String callBackKey) { 
+				final Map<String,Object> params = JSONObject.parseObject(jsonParams, Map.class);
 				new Handler().post(new Runnable() { 
 					@Override
 					public void run() {
@@ -99,7 +101,8 @@ public class WebViewActivity extends Activity {
 			//post提交
 			@Override
 			@JavascriptInterface
-			public void ajaxPost(final String url,final Map<String,Object> params,final String callBackKey) {
+			public void ajaxPost(final String url,final String jsonParams,final String callBackKey) {
+				final Map<String,Object> params = JSONObject.parseObject(jsonParams, Map.class);
 				new Handler().post(new Runnable() {
 
 					@Override
@@ -126,6 +129,21 @@ public class WebViewActivity extends Activity {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
+						webViewCallBack(SPUtils.getInstance().getString(key),callBackKey);
+					}
+				}); 
+			}
+			
+			/**
+			 * 获取固定的key
+			 */
+			@JavascriptInterface
+			public void setKeyVal(final String key,final String val,final String callBackKey) { 
+				new Handler().post(new Runnable() { 
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						SPUtils.getInstance().put(key, val);
 						webViewCallBack(SPUtils.getInstance().getString(key),callBackKey);
 					}
 				}); 
@@ -190,7 +208,7 @@ public class WebViewActivity extends Activity {
 		 * @param params
 		 * @param callBackKey
 		 */
-		void ajaxGet(String url,Map<String,Object> params,String callBackKey); 
+		void ajaxGet(String url,String jsonParams,String callBackKey); 
 		
 		/**
 		 * 调用ajax方法
@@ -199,13 +217,21 @@ public class WebViewActivity extends Activity {
 		 * @param params
 		 * @param callBackKey
 		 */
-		void ajaxPost(String url,Map<String,Object> params,String callBackKey); 
+		void ajaxPost(String url,String jsonParams,String callBackKey); 
 		
 		/**
 		 * 获取key val 值
 		 * @param key
 		 */
 		void getKeyVal(String key,final String callBackKey);
+		
+		/**
+		 * 设置key val 值
+		 * @param key
+		 * @param val
+		 * @param callBackKey
+		 */
+		 void setKeyVal(final String key,final String val,final String callBackKey);
 		
 		/**
 		 * 蓝牙操作
