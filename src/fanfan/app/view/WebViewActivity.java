@@ -1,36 +1,36 @@
 package fanfan.app.view;
  
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushManager;
+import com.tencent.android.tpush.common.Constants;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.webkit.JavascriptInterface;
-import fanfan.app.constant.UrlConstant;
-import fanfan.app.manager.BlueToothManager;
-import fanfan.app.manager.OkHttpManager;
-import fanfan.app.manager.VersionManager;
-import fanfan.app.model.APIResponse;
-import fanfan.app.model.Response;
-import fanfan.app.util.BlueToothUtils;
-import fanfan.app.util.ResourceUtils;
-import fanfan.app.util.SPUtils;
+import fanfan.app.constant.CodeConstant;
+import fanfan.app.util.PhotoUtil;
+import fanfan.app.view.webview.JavaScriptAPI;
+import fanfan.app.view.webview.JavaScriptImpl;
+import fanfan.app.view.webview.X5WebView;
 import fanfan.business.app.R; 
 
 public class WebViewActivity extends Activity {
 
 	X5WebView webView;
+	
+	JavaScriptAPI javaScriptAPI;
+	
+	private static String tempFile="temp_photo.jpg";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,36 +39,45 @@ public class WebViewActivity extends Activity {
 		webView = (X5WebView) findViewById(R.id.full_web_webview);
 		
 		initWebView();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.web_view, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
 		
-		return super.onOptionsItemSelected(item);
+		initXG();
 	}
+
+	/**
+	 * 操作返回
+	 */
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+        if (resultCode != RESULT_OK) { 
+            return;
+        }
+
+        switch (requestCode) {
+            case CodeConstant.Code_Choise_Img:
+            	 PhotoUtil.setPhotoData(data.getData());
+            	 //执行截图
+            	 PhotoUtil.startCutImg(this);
+            	break;
+            case CodeConstant.Code_Take_Photo:
+            	 //执行截图
+            	 PhotoUtil.startCutImg(this);
+            	break;
+            case CodeConstant.Code_Cut_Back:
+            	//获取图片
+            	javaScriptAPI.uploadFile(PhotoUtil.getFile(true));
+            	break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 	
 	
 	@SuppressWarnings("static-access")
 	@SuppressLint("NewApi")
-	private void initWebView() { 
+	private void initWebView() {
 		//加载Url地址
 		//webView.loadUrl(VersionManager.getInstrance().getIndexPath());
 		
-		webView.loadUrl("http://192.168.0.108:8080");
+		webView.loadUrl("http://192.168.2.68:8080");
 		 
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
@@ -76,168 +85,31 @@ public class WebViewActivity extends Activity {
 		
 		webView.getView().setOverScrollMode(View.OVER_SCROLL_ALWAYS);
 		
-		webView.addJavascriptInterface(new JavaScriptAPI() {
-
-			//get提交
-			@Override
-			@JavascriptInterface
-			public void ajaxGet(final String url,final String jsonParams,final String callBackKey) { 
-				final Map<String,Object> params = JSONObject.parseObject(jsonParams, Map.class);
-				new Handler().post(new Runnable() { 
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						OkHttpManager.getInstrance().get(UrlConstant.domain+url, params, new Response<Object>() { 
-							@Override
-							public void callBack(final APIResponse<Object> response) {
-								webViewCallBack(JSON.toJSONString(response),callBackKey);
-							}
-						});
-					}
-					
-				});
-			}
-			
-			//post提交
-			@Override
-			@JavascriptInterface
-			public void ajaxPost(final String url,final String jsonParams,final String callBackKey) {
-				final Map<String,Object> params = JSONObject.parseObject(jsonParams, Map.class);
-				new Handler().post(new Runnable() {
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						OkHttpManager.getInstrance().post(UrlConstant.domain+url, params, new Response<Object>() { 
-							@Override
-							public void callBack(final APIResponse<Object>  response) { 
-								// TODO Auto-generated method stub 
-									webViewCallBack(JSON.toJSONString(response),callBackKey);  
-							}
-						});
-					}
-					
-				}); 
-			}
-			
-			/**
-			 * 获取固定的key
-			 */
-			@JavascriptInterface
-			public void getKeyVal(final String key,final String callBackKey) { 
-				new Handler().post(new Runnable() { 
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						webViewCallBack(SPUtils.getInstance().getString(key),callBackKey);
-					}
-				}); 
-			}
-			
-			/**
-			 * 获取固定的key
-			 */
-			@JavascriptInterface
-			public void setKeyVal(final String key,final String val,final String callBackKey) { 
-				new Handler().post(new Runnable() { 
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						SPUtils.getInstance().put(key, val);
-						webViewCallBack(SPUtils.getInstance().getString(key),callBackKey);
-					}
-				}); 
-			}
-			
-			/**
-			 * 蓝牙操作
-			 */
-			@Override
-			@JavascriptInterface
-			public void blueTooth(final boolean start,final String callBackKey) {
-				
-				// TODO Auto-generated method stub
-				new Handler().post(new Runnable() {
-					public void run() {
-						if(start) {
-							BlueToothManager.getInstrance().startScaneBlue(WebViewActivity.this, new Response<Object>() {
-								
-								@Override
-								public void callBack(APIResponse<Object> response) {
-									// TODO Auto-generated method stub
-									webViewCallBack(JSON.toJSONString(response), callBackKey);
-								}
-							});
-						}else {
-							BlueToothManager.getInstrance().stopScaneBlue();
-						}
-					}
-				});
-			}
-			
-			//回调js方法
-			private void webViewCallBack(final String data,final String callBackKey) {
-				// TODO Auto-generated method stub 
-				webView.post(new Runnable() {
-					@Override
-					public void run() {
-						Log.d("webview", data);
-						if(data.indexOf("{")==0) {
-							// 回调js方法
-							webView.loadUrl((String.format("javascript:window.callback(%s,\"%s\")",data,callBackKey)));
-						}else {
-							// 回调js方法
-							webView.loadUrl((String.format("javascript:window.callback(\"%s\",\"%s\")",data,callBackKey)));
-						}
-					}
-				});
-			}
-
+		//曝光js接口
+		javaScriptAPI = new JavaScriptImpl(webView, this);
 		
-			
-		} , "android");  
+		webView.addJavascriptInterface(javaScriptAPI, "android");
 	}
 	
+	/**
+	 * 加载信鸽
+	 */
+	private void initXG() {
+		// 注册接口
+        XGPushConfig.enableDebug(this,true);
+    	XGPushManager.bindAccount(getApplicationContext(), "15821243531");
+		XGPushManager.registerPush(this,new XGIOperateCallback() {
+	        	@Override
+	          public void onSuccess(Object data, int flag) {
+	           //token在设备卸载重装的时候有可能会变
+	               Log.d("TPush", "注册成功，设备token为：" + data);
+	           }
+	           @Override
+	           public void onFail(Object data, int errCode, String msg) {
+	               Log.d("TPush", "注册失败，错误码：" + errCode + ",错误信息：" + msg);
+	           }
+		});
+
 	
-	public interface JavaScriptAPI{
-		
-		/**
-		 * 调用ajax方法
-		 * @param method
-		 * @param url
-		 * @param params
-		 * @param callBackKey
-		 */
-		void ajaxGet(String url,String jsonParams,String callBackKey); 
-		
-		/**
-		 * 调用ajax方法
-		 * @param method
-		 * @param url
-		 * @param params
-		 * @param callBackKey
-		 */
-		void ajaxPost(String url,String jsonParams,String callBackKey); 
-		
-		/**
-		 * 获取key val 值
-		 * @param key
-		 */
-		void getKeyVal(String key,final String callBackKey);
-		
-		/**
-		 * 设置key val 值
-		 * @param key
-		 * @param val
-		 * @param callBackKey
-		 */
-		 void setKeyVal(final String key,final String val,final String callBackKey);
-		
-		/**
-		 * 蓝牙操作
-		 * @param start 开启、停止
-		 * @param callBackKey
-		 */
-		void blueTooth(boolean start,final String callBackKey);
 	}
 }

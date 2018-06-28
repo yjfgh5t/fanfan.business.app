@@ -1,7 +1,5 @@
 package fanfan.app.constant;
 
-import fanfan.app.util.SPUtils;
-
 public class SPConstant {
 
 	/**

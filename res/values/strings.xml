@@ -9,5 +9,12 @@
     <string name="empty_userpwd">请输入密码</string>
     <string name="error_name_pwd">用户名或密码错误</string>
     <string name="title_activity_web_view">WebViewActivity</string>
+    
+    <string name="action_clip">裁剪</string>
+    <string name="msg_camera_invalid_permission_denied">无法打开相机，可能是权限被拒绝</string>
+    <string name="msg_camera_invalid_initial_failed">相机初始化失败，无法打开相机</string>
+    <string name="msg_camera_invalid_unknown_error">无法打开相机，未知错误</string>
+    <string name="msg_could_not_save_photo">无法保存图片</string>
+    <string name="msg_clipping_image">正在裁剪图片</string>
 
 </resources>

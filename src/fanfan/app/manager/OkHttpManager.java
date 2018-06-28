@@ -1,5 +1,6 @@
 package fanfan.app.manager;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -136,9 +137,16 @@ public class OkHttpManager {
 					formBody = RequestBody.create(MediaType.parse("application/json"),
 							params.get("content").toString());
 					break;
+				//下载文件
 				case "file":
 					//formBody = RequestBody.create(MediaType.parse("application/octet-stream"),"");
 					params.put("head.is-file", "true");
+					break;
+				//上传文件
+				case "uploadFile":
+					File file = (File)params.get("content");
+					RequestBody requestFileBody = RequestBody.create(MediaType.parse("application/octet-stream"),file);
+					formBody = new MultipartBody.Builder().addFormDataPart("file", file.getName(), requestFileBody).build();
 					break;
 				}
 				
@@ -187,7 +195,7 @@ public class OkHttpManager {
 				}
 			}
 		}
-
+		
 		requestBuilder.url(url);
 		requestBuilder.method(method, formBody);
 		return requestBuilder.build();

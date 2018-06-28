@@ -1,4 +1,4 @@
-package fanfan.app.view;
+package fanfan.app.view.webview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
