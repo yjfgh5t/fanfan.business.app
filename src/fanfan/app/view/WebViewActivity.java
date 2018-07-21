@@ -39,8 +39,6 @@ public class WebViewActivity extends Activity {
 		webView = (X5WebView) findViewById(R.id.full_web_webview);
 		
 		initWebView();
-		
-		initXG();
 	}
 
 	/**
@@ -89,27 +87,5 @@ public class WebViewActivity extends Activity {
 		javaScriptAPI = new JavaScriptImpl(webView, this);
 		
 		webView.addJavascriptInterface(javaScriptAPI, "android");
-	}
-	
-	/**
-	 * 加载信鸽
-	 */
-	private void initXG() {
-		// 注册接口
-        XGPushConfig.enableDebug(this,true);
-    	XGPushManager.bindAccount(getApplicationContext(), "15821243531");
-		XGPushManager.registerPush(this,new XGIOperateCallback() {
-	        	@Override
-	          public void onSuccess(Object data, int flag) {
-	           //token在设备卸载重装的时候有可能会变
-	               Log.d("TPush", "注册成功，设备token为：" + data);
-	           }
-	           @Override
-	           public void onFail(Object data, int errCode, String msg) {
-	               Log.d("TPush", "注册失败，错误码：" + errCode + ",错误信息：" + msg);
-	           }
-		});
-
-	
 	}
 }

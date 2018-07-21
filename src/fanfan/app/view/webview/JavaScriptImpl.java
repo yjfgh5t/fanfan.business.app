@@ -6,6 +6,9 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushManager;
 
 import android.os.Handler;
 import android.util.Log;
@@ -17,6 +20,7 @@ import fanfan.app.model.APIResponse;
 import fanfan.app.model.Response;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.util.SPUtils;
+import fanfan.app.util.Utils;
 import fanfan.app.view.WebViewActivity;
 
 public class JavaScriptImpl implements JavaScriptAPI {
@@ -197,5 +201,31 @@ public class JavaScriptImpl implements JavaScriptAPI {
     	//通知前端 加载进度条
     	webViewCallBack("",loadingKey);
 	}
+
+	@Override
+	@JavascriptInterface
+	public void bindUser(String userId, String callBackKey) {
+		// TODO Auto-generated method stub
+		initXG(userId,callBackKey);
+	}
 	
+	/**
+	 * 加载信鸽
+	 */
+	private void initXG(String userId,final String callBackKey) {
+		// 注册接口
+        XGPushConfig.enableDebug(Utils.getApp(),true);
+    	XGPushManager.bindAccount(Utils.getApp(), userId);
+		XGPushManager.registerPush(Utils.getApp(),new XGIOperateCallback() {
+	        	@Override
+	          public void onSuccess(Object data, int flag) {
+	           //token在设备卸载重装的时候有可能会变
+	        		webViewCallBack("绑定成功",callBackKey);
+	           }
+	           @Override
+	           public void onFail(Object data, int errCode, String msg) {
+	        	   webViewCallBack("绑定失败",callBackKey);
+	           }
+		});
+	}
 }

@@ -34,6 +34,13 @@ public interface JavaScriptAPI {
 	 * @param callBackKey
 	 */
 	 void setKeyVal(final String key,final String val,final String callBackKey);
+	 
+	 /**
+	  * 绑定用户
+	  * @param userId
+	  * @param callBackKey
+	  */
+	 void bindUser(final String userId,final String callBackKey);
 	
 	/**
 	 * 蓝牙操作
