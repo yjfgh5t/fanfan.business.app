@@ -77,7 +77,7 @@ public class WebViewActivity extends Activity {
 		//加载Url地址
 		//webView.loadUrl(VersionManager.getInstrance().getIndexPath());
 		
-		webView.loadUrl("http://192.168.2.68:8080");
+		webView.loadUrl("http://192.168.1.6:8080");
 		 
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
