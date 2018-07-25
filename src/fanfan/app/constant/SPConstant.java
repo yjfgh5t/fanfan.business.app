@@ -5,17 +5,8 @@ public class SPConstant {
 	/**
 	 * 用户Id
 	 */
-	public static String userId ="sp_user_id";
+	public static String customerId ="sp_customer_id";
 	
-	/**
-	 * 用户名
-	 */
-	public static String userName="sp_user_name";
-	
-	/**
-	 * 密码
-	 */
-	public static String userPwd="sp_user_pwd";
 	 
 	/**
 	 * html版本

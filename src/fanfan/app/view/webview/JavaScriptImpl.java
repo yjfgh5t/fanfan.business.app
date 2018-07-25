@@ -6,10 +6,14 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushManager;
 
 import android.os.Handler;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.BlueToothManager;
 import fanfan.app.manager.OkHttpManager;
@@ -17,6 +21,7 @@ import fanfan.app.model.APIResponse;
 import fanfan.app.model.Response;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.util.SPUtils;
+import fanfan.app.util.Utils;
 import fanfan.app.view.WebViewActivity;
 
 public class JavaScriptImpl implements JavaScriptAPI {
@@ -27,9 +32,20 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	
 	private String choiseCallbackKey,loadingKey="loading";
 	
+	private static JavaScriptImpl instrance;
+	
+	/**
+	 * 获取当前实例
+	 * @return
+	 */
+	public static JavaScriptImpl getInstrance() {
+		return instrance;
+	}
+	
 	public JavaScriptImpl(X5WebView webView,WebViewActivity webViewActivity) {
 		this.webView = webView;
 		this.webViewActivity = webViewActivity;
+		instrance = this;
 	}
 	
 	//get提交
@@ -129,6 +145,7 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		});
 	}
 	
+	@Override
 	//回调js方法
 	public void webViewCallBack(final String data,final String callBackKey) {
 		// TODO Auto-generated method stub 
@@ -197,5 +214,38 @@ public class JavaScriptImpl implements JavaScriptAPI {
     	//通知前端 加载进度条
     	webViewCallBack("",loadingKey);
 	}
+
+	@Override
+	@JavascriptInterface
+	public void bindUser(String customerId, String callBackKey) {
+		SPUtils.getInstance().put(SPConstant.customerId,Integer.parseInt(customerId));
+		// TODO Auto-generated method stub
+		initXG(customerId,callBackKey);
+	}
 	
+	@Override
+	@JavascriptInterface
+	public void loginOut(String userId,String callBackKey) {
+		XGPushManager.delAccount(Utils.getApp(),"*");
+		webViewCallBack("", callBackKey);
+	}
+	
+	/**
+	 * 加载信鸽
+	 */
+	private void initXG(String customerId,final String callBackKey) {
+		// 注册接口
+        XGPushConfig.enableDebug(Utils.getApp(),true);
+    	XGPushManager.bindAccount(Utils.getApp(), customerId,new XGIOperateCallback() {
+	        	@Override
+	          public void onSuccess(Object data, int flag) {
+	           //token在设备卸载重装的时候有可能会变
+	        		webViewCallBack("绑定成功",callBackKey);
+	           }
+	           @Override
+	           public void onFail(Object data, int errCode, String msg) {
+	        	   webViewCallBack("绑定失败"+msg,callBackKey);
+	           }
+		});
+	}
 }
