@@ -37,10 +37,10 @@ public interface JavaScriptAPI {
 	 
 	 /**
 	  * 绑定用户
-	  * @param userId
+	  * @param customerId
 	  * @param callBackKey
 	  */
-	 void bindUser(final String userId,final String callBackKey);
+	 void bindUser(final String customerId,final String callBackKey);
 	
 	/**
 	 * 蓝牙操作
@@ -68,4 +68,11 @@ public interface JavaScriptAPI {
 	 * @param file
 	 */
 	void uploadFile(final File file);
+	
+	/**
+	 * 退出登录
+	 * @param userId
+	 * @param callBackKey
+	 */
+	void loginOut(String userId,String callBackKey);
 }

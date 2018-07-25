@@ -1,7 +1,6 @@
 package fanfan.app.view;
  
-import fanfan.app.constant.UrlConstant;
-import fanfan.app.manager.LoginManager;
+import fanfan.app.constant.UrlConstant; 
 import fanfan.app.manager.OkHttpManager;
 import fanfan.app.manager.VersionManager;
 import fanfan.app.model.APIResponse;
@@ -84,18 +83,6 @@ public class MainActivity extends Activity {
 				if(!checkEditVal()) {
 					return;
 				}
-				
-				//登入
-				LoginManager.getInstrance().login(viewUserName.getText().toString(), viewUserPwd.getText().toString(), new Response<Boolean>() {
-
-					@Override
-					public void callBack(APIResponse<Boolean> response) {
-						// TODO Auto-generated method stub
-						if(response.getData()) {
-							ActivityUtils.startActivity(new Intent(MainActivity.this, WebViewActivity.class));  
-						}
-					}
-				}); 
 			}
 		});
 	}

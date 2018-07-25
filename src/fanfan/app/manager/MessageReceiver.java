@@ -7,6 +7,7 @@ import com.tencent.android.tpush.XGPushShowedResult;
 import com.tencent.android.tpush.XGPushTextMessage;
 
 import android.content.Context;
+import fanfan.app.view.webview.JavaScriptImpl;
 
 public class MessageReceiver extends XGPushBaseReceiver {
 
@@ -19,13 +20,17 @@ public class MessageReceiver extends XGPushBaseReceiver {
 	@Override
 	public void onNotifactionClickedResult(Context arg0, XGPushClickedResult arg1) {
 		// TODO Auto-generated method stub
-		
+		if(JavaScriptImpl.getInstrance()!=null) {
+			JavaScriptImpl.getInstrance().webViewCallBack("click", "xg_msg");
+		}
 	}
 
 	@Override
 	public void onNotifactionShowedResult(Context arg0, XGPushShowedResult arg1) {
 		// TODO Auto-generated method stub
-		
+		if(JavaScriptImpl.getInstrance()!=null) {
+			JavaScriptImpl.getInstrance().webViewCallBack("show", "xg_msg");
+		}
 	}
 
 	@Override
@@ -43,7 +48,9 @@ public class MessageReceiver extends XGPushBaseReceiver {
 	@Override
 	public void onTextMessage(Context arg0, XGPushTextMessage arg1) {
 		// TODO Auto-generated method stub
-		
+		if(JavaScriptImpl.getInstrance()!=null) {
+			JavaScriptImpl.getInstrance().webViewCallBack("msg", "xg_msg");
+		}
 	}
 
 	@Override
