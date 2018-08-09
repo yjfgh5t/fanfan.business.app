@@ -57,6 +57,11 @@ public interface JavaScriptAPI {
 	void choiceImg(final int takePhoto,String callBackKey);
 	
 	/**
+	 * 退出app
+	 */
+	void exitApp();
+	
+	/**
 	 * 调用webView 方法
 	 * @param data
 	 * @param callBackKey

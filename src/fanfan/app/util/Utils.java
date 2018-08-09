@@ -98,6 +98,27 @@ public final class Utils {
         }
         throw new NullPointerException("u should init first");
     }
+    
+    /**
+     * 判断应用是否存活
+     * @param context
+     * @param packageName
+     * @return
+     */
+    @SuppressWarnings("deprecation")
+	public static boolean isAppAlive(Context context,String packageName) {
+    	ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
+        if (list.size() <= 0) {
+            return false;
+        }
+        for (ActivityManager.RunningTaskInfo info : list) {
+            if (info.baseActivity.getPackageName().equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     static ActivityLifecycleImpl getActivityLifecycle() {
         return ACTIVITY_LIFECYCLE;
@@ -128,7 +149,8 @@ public final class Utils {
             }
         }
         return false;
-    }
+    } 
+    
 
     @SuppressLint("NewApi")
 	static class ActivityLifecycleImpl implements ActivityLifecycleCallbacks {

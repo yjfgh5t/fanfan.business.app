@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
-
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
@@ -229,6 +229,15 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		XGPushManager.delAccount(Utils.getApp(),"*");
 		webViewCallBack("", callBackKey);
 	}
+	
+	@SuppressLint("NewApi")
+	@Override
+	@JavascriptInterface
+	public void exitApp() {
+		webViewActivity.finishAffinity();
+		System.exit(0);
+	}
+	
 	
 	/**
 	 * 加载信鸽

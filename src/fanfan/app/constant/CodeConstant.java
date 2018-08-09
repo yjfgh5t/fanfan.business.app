@@ -16,4 +16,9 @@ public class CodeConstant {
 	 */
 	public static final int Code_Cut_Back=0x4;
 	
+	/**
+	 * 通知消息key
+	 */
+	public static final String Notify_Msg_CallKey = "notify_msg";
+	
 }

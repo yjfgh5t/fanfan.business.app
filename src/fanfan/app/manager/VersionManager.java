@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Environment;
+import android.util.Log;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
 import fanfan.app.model.APIResponse;
@@ -21,12 +22,6 @@ import fanfan.app.util.Utils;
 import fanfan.app.util.ZipUtils;
 
 public class VersionManager {
-
-	//SDCard 路径 
-	static String sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/fanfan.business.app";
-	
-	//www地址
-	static String wwwPath = sdCardPath+"/www";
 	
 	//assets 路径
 	static String assetsPath = "www.zip";
@@ -40,13 +35,13 @@ public class VersionManager {
 			instance = new VersionManager();
 			
 			//创建文件夹 
-			FileUtils.createOrExistsDir(wwwPath);  
+			FileUtils.createOrExistsDir(SPConstant.sdCardWWWPath);  
 		}
 		return instance;
 	}
 	
 	public String getIndexPath() {
-		return "file://"+wwwPath+"/index.html";
+		return "file://"+SPConstant.sdCardWWWPath+"/index.html";
 	}
 	
 	/**
@@ -72,19 +67,20 @@ public class VersionManager {
 		
 		//未安装
 		if(getCurrentHtmlVersion().equals("0.0.0")) {
-			 
-			 String str = ResourceUtils.readAssets2String("www.zip");
-			 
 			//copy assets至SDCard
-			Boolean success = ResourceUtils.copyFileFromAssets(assetsPath, wwwPath+"/www.zip");
+			Boolean success = ResourceUtils.copyFileFromAssets(assetsPath, SPConstant.sdCardWWWPath+"/www.zip");
 			if(success) {
 				//解压文件
 				unHtmlZip();
 				//设置版本
 				SPUtils.getInstance().put(SPConstant.htmlVersion, SPConstant.htmlInstallVersion);
 			}
-		}else {
-			 
+		//文件不存在 或被删除
+		}else if(!FileUtils.isDir(SPConstant.sdCardWWWPath)){
+			//下载文件
+			downLoadHtmlZip(getCurrentHtmlVersion());
+		}
+		else{
 			OkHttpManager.getInstrance().get(UrlConstant.htmlVersion, new Response<String>(){
 
 				@Override
@@ -118,29 +114,29 @@ public class VersionManager {
 			public void callBack(APIResponse<DownLoadModel> response) {
 				// TODO Auto-generated method stub
 				if(response.isSuccess()) {
-					
-					byte _byte[] = new byte [response.getData().getContentLength()>1024?1024:response.getData().getContentLength().intValue()];
-					
-					//删除old的压缩包
-					FileUtils.deleteFile(wwwPath+"/www.zip");
+					//删除old文件
+					FileUtils.deleteAllInDir(SPConstant.sdCardWWWPath);
 					
 					//写入至SDCard
-					FileIOUtils.writeFileFromIS(wwwPath+"/www.zip", response.getData().getInputStream());
+					boolean writeSuccess = FileIOUtils.writeFileFromIS(SPConstant.sdCardWWWPath+"/www.zip", response.getData().getInputStream());
 					
-					//解压文件
-					unHtmlZip();
-					
-					//设置版本
-					SPUtils.getInstance().put(SPConstant.htmlVersion, version);
+					if(writeSuccess) {
+						//解压文件
+						unHtmlZip();
+						//设置版本
+						SPUtils.getInstance().put(SPConstant.htmlVersion, version);
+					}
 				}
 			}
 		});
 	}
 	
 	private  void unHtmlZip() {
-		
 		try {
-		 List<File> files  =	ZipUtils.unzipFile(wwwPath+"/www.zip", wwwPath+"/");
+		 List<File> files  = ZipUtils.unzipFile(SPConstant.sdCardWWWPath+"/www.zip", SPConstant.sdCardWWWPath+"/");
+		 for(File file:files) {
+			 Log.d("解压文件", file.getName());
+		 }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

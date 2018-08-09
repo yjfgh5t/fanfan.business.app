@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import fanfan.app.constant.CodeConstant;
+import fanfan.app.manager.MediaManager;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.view.webview.JavaScriptAPI;
 import fanfan.app.view.webview.JavaScriptImpl;
@@ -68,6 +69,25 @@ public class WebViewActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 	
+	/**
+	 * Activity重新显示
+	 */
+	@Override
+	protected void onNewIntent(Intent intent) {
+		javaScriptAPI.webViewCallBack("", CodeConstant.Notify_Msg_CallKey+".notify-click");
+	}
+	
+	/**
+	 * 回退键
+	 */
+	@Override
+	public void onBackPressed() {
+		//播放新订单语言
+		MediaManager.getInstrance().playNewOrder();
+		//super.onBackPressed();
+		javaScriptAPI.webViewCallBack("回退", CodeConstant.Notify_Msg_CallKey+".back-key");
+	}
+	
 	
 	@SuppressWarnings("static-access")
 	@SuppressLint("NewApi")
@@ -75,7 +95,7 @@ public class WebViewActivity extends Activity {
 		//加载Url地址
 		//webView.loadUrl(VersionManager.getInstrance().getIndexPath());
 		
-		webView.loadUrl("http://192.168.1.6:8080");
+		webView.loadUrl("http://192.168.2.68:8080");
 		 
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 

@@ -2,8 +2,13 @@ package fanfan.app.view;
  
 import com.tencent.smtt.sdk.QbSdk;
 
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
-import fanfan.app.manager.VersionManager; 
+import fanfan.app.manager.VersionManager;
+import fanfan.app.service.ForegroundService;
+import fanfan.app.util.Utils; 
 
 public class Application extends android.app.Application {
  
@@ -13,6 +18,9 @@ public class Application extends android.app.Application {
 		
 		//加载选择X5内核
 		initTBS();
+		
+		//创建服务
+		initService();
 		
 		//刷新Html版本
 		VersionManager.getInstrance().refshHtmlVersion(); 
@@ -40,5 +48,16 @@ public class Application extends android.app.Application {
 		};
 		//x5内核初始化接口
 		QbSdk.initX5Environment(getApplicationContext(),  cb); 
+	}
+	
+	/**
+	 * 加载服务
+	 */
+	private void initService() {
+		
+		 IntentFilter filter = new IntentFilter("MY_ACTION");
+		//启动前台通知服务
+		Intent  intent = new Intent(this,ForegroundService.class); 
+		startService(intent);
 	}
 }
