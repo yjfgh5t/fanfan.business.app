@@ -146,6 +146,26 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	}
 	
 	@Override
+	@JavascriptInterface
+	public void  blueToothConnect(final Integer chooseIndex,final String callBackKey) {
+		// TODO Auto-generated method stub
+				new Handler().post(new Runnable() {
+					public void run() {
+						BlueToothManager.getInstrance().connectBlue(chooseIndex, new Response<Object>() {
+							@Override
+							public void callBack(APIResponse<Object> response) {
+								// TODO Auto-generated method stub
+								// TODO Auto-generated method stub
+								webViewCallBack(JSON.toJSONString(response), callBackKey);
+							}
+							
+						});
+					}
+				});
+	}
+	
+	
+	@Override
 	//回调js方法
 	public void webViewCallBack(final String data,final String callBackKey) {
 		// TODO Auto-generated method stub 

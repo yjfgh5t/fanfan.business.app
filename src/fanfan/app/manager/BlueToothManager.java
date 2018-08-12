@@ -11,6 +11,7 @@ import fanfan.app.model.APIResponse;
 import fanfan.app.model.BlueToothModel;
 import fanfan.app.model.Response;
 import fanfan.app.util.BlueToothUtils;
+import fanfan.app.util.StringUtils;
 import fanfan.app.util.Utils;
 import fanfan.app.util.BlueToothUtils.BTUtilListener;
 
@@ -19,6 +20,8 @@ public class BlueToothManager {
 	private static BlueToothManager blueToothManager;
 
 	private  Response<Object> callResponse;
+	
+	private Response<Object> connetCallResponse;
 	
 	/**
 	 * 获取单列
@@ -51,6 +54,15 @@ public class BlueToothManager {
 	}
 	
 	/**
+	 * 链接蓝牙
+	 */
+	public void connectBlue(Integer chooseIndex,Response<Object> call) {
+		//开始链接蓝牙
+		BlueToothUtils.getInstance().connectLeDevice(chooseIndex);
+		connetCallResponse = call;
+	}
+	
+	/**
 	 * 停止扫描蓝牙
 	 */
 	public void stopScaneBlue() {
@@ -76,36 +88,52 @@ public class BlueToothManager {
 		}
 
 		@Override
-		public void onLeScanDevices(BluetoothDevice device) {
+		public void onLeScanDevices(BluetoothDevice device,Integer index,String deviceName) {
 			// TODO Auto-generated method stub
+			Map<String,Object> state =new  HashMap<>();
+			state.put("event", "device"); 
 			BlueToothModel  toothModel  = new BlueToothModel();
 			toothModel.setAddress(device.getAddress());
-			toothModel.setName(device.getName());
-			callResponse.callBack(new APIResponse<Object>().success().setData(toothModel));
+			toothModel.setName(deviceName);
+			toothModel.setIndex(index);
+			state.put("model", toothModel);
+			callResponse.callBack(new APIResponse<Object>().success().setData(state));
 		}
 
 		@Override
 		public void onConnected(BluetoothDevice mCurDevice) {
 			// TODO Auto-generated method stub
-			
+			//链接成功
+			Map<String,String> state =new  HashMap<>();
+			state.put("event", "connected");
+			connetCallResponse.callBack(new APIResponse<Object>().success().setData(state));
 		}
 
 		@Override
 		public void onDisConnected(BluetoothDevice mCurDevice) {
 			// TODO Auto-generated method stub
-			
+			//设备断开链接 
+			Map<String,String> state =new  HashMap<>();
+			state.put("event", "disConnected");
+			connetCallResponse.callBack(new APIResponse<Object>().success().setData(state));
 		}
 
 		@Override
 		public void onConnecting(BluetoothDevice mCurDevice) {
 			// TODO Auto-generated method stub
-			
+			//链接中
+			Map<String,String> state =new  HashMap<>();
+			state.put("event", "connecting");
+			connetCallResponse.callBack(new APIResponse<Object>().success().setData(state));
 		}
 
 		@Override
 		public void onDisConnecting(BluetoothDevice mCurDevice) {
 			// TODO Auto-generated method stub
-			
+			//链接失败 
+			Map<String,String> state =new  HashMap<>();
+			state.put("event", "disConnecting");
+			connetCallResponse.callBack(new APIResponse<Object>().success().setData(state));
 		}
 
 		@Override

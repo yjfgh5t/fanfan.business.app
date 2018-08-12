@@ -50,6 +50,13 @@ public interface JavaScriptAPI {
 	void blueTooth(boolean start,final String callBackKey);
 	
 	/**
+	 * 链接蓝牙操作
+	 * @param chooseIndex
+	 * @param callBackKey
+	 */
+	void  blueToothConnect(final Integer chooseIndex,final String callBackKey);
+	
+	/**
 	 * 选择照片
 	 * @param takePhoto 1:拍照 2:打开相册
 	 * @param callBackKey

@@ -25,6 +25,24 @@ public class BlueToothModel {
 	
 	private String address;
 	
+	private Integer index;
+	
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+	public List<UUID> getUuids() {
+		return uuids;
+	}
+
+	public void setUuids(List<UUID> uuids) {
+		this.uuids = uuids;
+	}
+
 	private  List<UUID> uuids;
 
 	public BlueToothModel() {}
