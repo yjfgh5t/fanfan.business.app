@@ -2,7 +2,7 @@ package fanfan.app.constant;
 
 public class UrlConstant {
 
-	public static final String domain="http://192.168.2.68:8081/api/";
+	public static final String domain="http://192.168.1.10:8081/api/";
 	
 	/**
 	 * 登录地址

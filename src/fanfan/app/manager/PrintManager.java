@@ -26,7 +26,7 @@ public class PrintManager {
 	
 	static int newOrderPlayCount=0;
 	
-	static String printPath= SPConstant.sdCardIndexPath+"/#/print";
+	static String printPath= "http://192.168.1.10:8080";//SPConstant.sdCardIndexPath+"/#/print";
 	
 	public static PrintManager getInstrance() {
 		if (instance == null) {
@@ -89,19 +89,15 @@ public class PrintManager {
 	 */
 	@TargetApi(Build.VERSION_CODES.KITKAT)
 	@SuppressLint("NewApi")
-	private void createWebPrintJob(Context context, X5WebView webView) {
+	public void createWebPrintJob(Context context, X5WebView webView) {
 
 	    // Get a PrintManager instance
 	    android.print.PrintManager printManager = (android.print.PrintManager)context.getSystemService(Context.PRINT_SERVICE);
 
 	    // Get a print adapter instance
-	    PrintDocumentAdapter printAdapter = (PrintDocumentAdapter) webView.createPrintDocumentAdapter(null);
-
-	    // Create a print job with name and adapter instance
-	    String jobName = "订单打印";
+	    PrintDocumentAdapter printAdapter = (PrintDocumentAdapter) webView.createPrintDocumentAdapter("打印内容");
 	    
-	    PrintJob printJob = printManager.print(jobName, printAdapter,new PrintAttributes.Builder().build());
-
+	    printManager.print(printPath, printAdapter,null);
 	    // Save the job object for later status checking
 	    //mPrintJobs.add(printJob);
 	}

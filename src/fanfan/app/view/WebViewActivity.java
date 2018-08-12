@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.manager.MediaManager;
+import fanfan.app.manager.PrintManager;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.view.webview.JavaScriptAPI;
 import fanfan.app.view.webview.JavaScriptImpl;
@@ -83,7 +84,7 @@ public class WebViewActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		//播放新订单语言
-		MediaManager.getInstrance().playNewOrder();
+		PrintManager.getInstrance().createWebPrintJob(this, webView);
 		//super.onBackPressed();
 		javaScriptAPI.webViewCallBack("回退", CodeConstant.Notify_Msg_CallKey+".back-key");
 	}
@@ -95,7 +96,7 @@ public class WebViewActivity extends Activity {
 		//加载Url地址
 		//webView.loadUrl(VersionManager.getInstrance().getIndexPath());
 		
-		webView.loadUrl("http://192.168.2.68:8080");
+		webView.loadUrl("http://192.168.1.10:8080");
 		 
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
