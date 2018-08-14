@@ -36,6 +36,11 @@ public class SPConstant {
 	public static final String autoPrint ="sp_auto_print";
 	
 	/**
+	 * 链接的蓝牙
+	 */
+	public static final String blueToothConnect="sp_blue_tooth_connect";
+	
+	/**
 	 * SDCard路径
 	 */
 	public static final String sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/fanfan.business.app";

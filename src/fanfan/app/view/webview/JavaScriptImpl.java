@@ -147,7 +147,7 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	
 	@Override
 	@JavascriptInterface
-	public void  blueToothConnect(final Integer chooseIndex,final String callBackKey) {
+	public void  blueToothConnect(final int chooseIndex,final String callBackKey) {
 		// TODO Auto-generated method stub
 				new Handler().post(new Runnable() {
 					public void run() {

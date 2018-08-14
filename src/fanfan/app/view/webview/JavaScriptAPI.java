@@ -54,7 +54,7 @@ public interface JavaScriptAPI {
 	 * @param chooseIndex
 	 * @param callBackKey
 	 */
-	void  blueToothConnect(final Integer chooseIndex,final String callBackKey);
+	void blueToothConnect(int chooseIndex,final String callBackKey);
 	
 	/**
 	 * 选择照片
