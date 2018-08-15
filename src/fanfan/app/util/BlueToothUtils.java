@@ -74,6 +74,11 @@ public class BlueToothUtils {
         init();
     }
     
+    public BluetoothDevice getCurrentDevice() {
+    	
+    	return mCurDevice;
+    }
+    
     public  String parseAdertisedData(byte[] advertisedData) {      
         List<UUID> uuids = new ArrayList<UUID>();
         String name = null;
@@ -305,9 +310,14 @@ public class BlueToothUtils {
     }
 
     //连接设备
-    public void connectLeDevice(int devicePos) {
+    public void connectLeDevice(String address) {
         mBtAdapter.stopLeScan(mLeScanCallback);
-        mCurDevice = listDevice.get(devicePos);
+        for(BluetoothDevice device : listDevice) {
+        	if(device.getAddress().equals(address)) {
+        		mCurDevice = device;
+        		break;
+        	}
+        }
         checkConnGatt();
     }
 

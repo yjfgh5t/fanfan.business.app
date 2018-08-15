@@ -1,7 +1,11 @@
 package fanfan.app.manager;
 
+import java.io.IOException;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -11,6 +15,9 @@ import android.print.PrintJob;
 import android.util.Log;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
+import fanfan.app.model.OrderPrintModel;
+import fanfan.app.util.BlueToothUtils;
+import fanfan.app.util.PrintUtils;
 import fanfan.app.view.webview.X5WebView;
 
 /**
@@ -22,11 +29,7 @@ public class PrintManager {
 	
 	static PrintManager instance; 
 	
-	static MediaPlayer newOrderMediaPlay;
-	
 	static int newOrderPlayCount=0;
-	
-	static String printPath= "http://192.168.1.10:8080";//SPConstant.sdCardIndexPath+"/#/print";
 	
 	public static PrintManager getInstrance() {
 		if (instance == null) {
@@ -38,14 +41,7 @@ public class PrintManager {
 	/**
 	 * 打印订单
 	 */
-	public void printOrder(final Context context, String printJsonModel) {
-		
-		final X5WebView webView = new X5WebView(context);
-		
-		webView.loadUrl(printPath);
-		//参数
-		webViewCallBack(webView,printJsonModel,CodeConstant.Notify_Msg_CallKey+".print");
-		
+	public void printOrder(final Context context, OrderPrintModel printModel) {
 		//开启线程打印
 		Thread thread = new Thread(new Runnable() {
 			@Override
@@ -53,7 +49,7 @@ public class PrintManager {
 				// TODO Auto-generated method stub
 				try {
 					Thread.sleep(1000);
-					createWebPrintJob(context,webView);
+					blueToothPrint(context);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -64,42 +60,60 @@ public class PrintManager {
 		thread.run();
 	}
 
-	//回调js方法
-	private void webViewCallBack(final X5WebView webView,final String data,final String callBackKey) {
-		// TODO Auto-generated method stub 
-		webView.post(new Runnable() {
-			@Override
-			public void run() {
-				Log.d("webview", data);
-				if(data.indexOf("{")==0) {
-					// 回调js方法
-					webView.loadUrl((String.format("javascript:window.callback(%s,\"%s\")",data,callBackKey)));
-				}else {
-					// 回调js方法
-					webView.loadUrl((String.format("javascript:window.callback(\"%s\",\"%s\")",data,callBackKey)));
-				}
-			}
-		});
-	}
 	
 	/**
 	 * 执行WebView打印
 	 * @param context
 	 * @param webView
 	 */
-	@TargetApi(Build.VERSION_CODES.KITKAT)
 	@SuppressLint("NewApi")
-	public void createWebPrintJob(Context context, X5WebView webView) {
+	public void blueToothPrint(Context context) {
+		BluetoothDevice device = BlueToothUtils.getInstance().getCurrentDevice();
+		try {
+			BluetoothSocket socket =  device.createRfcommSocketToServiceRecord(device.getUuids()[0].getUuid());
+			
+			PrintUtils.setOutputStream(socket.getOutputStream());
+			
+			PrintUtils.selectCommand(PrintUtils.RESET);
+			PrintUtils.selectCommand(PrintUtils.LINE_SPACING_DEFAULT);
+			PrintUtils.selectCommand(PrintUtils.ALIGN_CENTER);
+			PrintUtils.printText("美食餐厅\n\n");
+			PrintUtils.selectCommand(PrintUtils.DOUBLE_HEIGHT_WIDTH);
+			PrintUtils.printText("桌号：1号桌\n\n");
+			PrintUtils.selectCommand(PrintUtils.NORMAL);
+			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
+			PrintUtils.printText(PrintUtils.printTwoData("订单编号", "201507161515\n"));
+			PrintUtils.printText(PrintUtils.printTwoData("点菜时间", "2016-02-16 10:46\n"));
+			PrintUtils.printText(PrintUtils.printTwoData("上菜时间", "2016-02-16 11:46\n"));
+			PrintUtils.printText(PrintUtils.printTwoData("人数：2人", "收银员：张三\n"));
 
-	    // Get a PrintManager instance
-	    android.print.PrintManager printManager = (android.print.PrintManager)context.getSystemService(Context.PRINT_SERVICE);
+			PrintUtils.printText("--------------------------------\n");
+			PrintUtils.selectCommand(PrintUtils.BOLD);
+			PrintUtils.printText(PrintUtils.printThreeData("项目", "数量", "金额\n"));
+			PrintUtils.printText("--------------------------------\n");
+			PrintUtils.selectCommand(PrintUtils.BOLD_CANCEL);
+			PrintUtils.printText(PrintUtils.printThreeData("面", "1", "0.00\n"));
+			PrintUtils.printText(PrintUtils.printThreeData("米饭", "1", "6.00\n"));
+			PrintUtils.printText(PrintUtils.printThreeData("铁板烧", "1", "26.00\n"));
+			PrintUtils.printText(PrintUtils.printThreeData("一个测试", "1", "226.00\n"));
+			PrintUtils.printText(PrintUtils.printThreeData("牛肉面啊啊", "1", "2226.00\n"));
+			PrintUtils.printText(PrintUtils.printThreeData("牛肉面啊啊啊牛肉面啊啊啊", "888", "98886.00\n"));
 
-	    // Get a print adapter instance
-	    PrintDocumentAdapter printAdapter = (PrintDocumentAdapter) webView.createPrintDocumentAdapter("打印内容");
-	    
-	    printManager.print(printPath, printAdapter,null);
-	    // Save the job object for later status checking
-	    //mPrintJobs.add(printJob);
+			PrintUtils.printText("--------------------------------\n");
+			PrintUtils.printText(PrintUtils.printTwoData("合计", "53.50\n"));
+			PrintUtils.printText(PrintUtils.printTwoData("抹零", "3.50\n"));
+			PrintUtils.printText("--------------------------------\n");
+			PrintUtils.printText(PrintUtils.printTwoData("应收", "50.00\n"));
+			PrintUtils.printText("--------------------------------\n");
+
+			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
+			PrintUtils.printText("备注：不要辣、不要香菜");
+			PrintUtils.printText("\n\n\n\n\n");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

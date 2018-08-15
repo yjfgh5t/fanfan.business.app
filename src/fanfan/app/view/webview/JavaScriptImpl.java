@@ -125,7 +125,6 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	@Override
 	@JavascriptInterface
 	public void blueTooth(final boolean start,final String callBackKey) {
-		
 		// TODO Auto-generated method stub
 		new Handler().post(new Runnable() {
 			public void run() {
@@ -147,11 +146,11 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	
 	@Override
 	@JavascriptInterface
-	public void  blueToothConnect(final int chooseIndex,final String callBackKey) {
+	public void  blueToothConnect(final String address,final String callBackKey) {
 		// TODO Auto-generated method stub
 				new Handler().post(new Runnable() {
 					public void run() {
-						BlueToothManager.getInstrance().connectBlue(chooseIndex, new Response<Object>() {
+						BlueToothManager.getInstrance().connectBlue(address, new Response<Object>() {
 							@Override
 							public void callBack(APIResponse<Object> response) {
 								// TODO Auto-generated method stub

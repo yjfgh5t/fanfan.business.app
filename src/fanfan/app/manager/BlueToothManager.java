@@ -56,13 +56,13 @@ public class BlueToothManager {
 	/**
 	 * 链接蓝牙
 	 */
-	public void connectBlue(Integer chooseIndex,Response<Object> call) {
+	public void connectBlue(String address,Response<Object> call) {
 		
 		try {
 		connetCallResponse = call;
 		
 		//开始链接蓝牙
-		BlueToothUtils.getInstance().connectLeDevice(chooseIndex);
+		BlueToothUtils.getInstance().connectLeDevice(address);
 		}catch(Exception ex) {
 			System.out.println(ex);
 		}

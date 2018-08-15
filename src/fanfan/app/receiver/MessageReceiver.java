@@ -14,6 +14,7 @@ import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.manager.MediaManager;
 import fanfan.app.manager.PrintManager;
+import fanfan.app.model.OrderPrintModel;
 import fanfan.app.util.SPUtils;
 import fanfan.app.util.StringUtils;
 import fanfan.app.view.webview.JavaScriptImpl;
@@ -70,7 +71,8 @@ public class MessageReceiver extends XGPushBaseReceiver {
 					MediaManager.getInstrance().playNewOrder();
 					//是否自动打印
 					if("true".equals(SPUtils.getInstance().getString(SPConstant.autoPrint,"true"))){
-						PrintManager.getInstrance().printOrder(context, params.get("data").toString());
+						OrderPrintModel printModel = JSONObject.parseObject(params.get("data").toString(), OrderPrintModel.class);
+						PrintManager.getInstrance().printOrder(context, printModel);
 					}
 					break;
 			}

@@ -83,8 +83,6 @@ public class WebViewActivity extends Activity {
 	 */
 	@Override
 	public void onBackPressed() {
-		//播放新订单语言
-		PrintManager.getInstrance().createWebPrintJob(this, webView);
 		//super.onBackPressed();
 		javaScriptAPI.webViewCallBack("回退", CodeConstant.Notify_Msg_CallKey+".back-key");
 	}

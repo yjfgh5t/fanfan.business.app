@@ -1,13 +1,22 @@
 package fanfan.app.view;
  
+import java.util.Map;
+
 import com.tencent.smtt.sdk.QbSdk;
 
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
+import fanfan.app.constant.SPConstant;
+import fanfan.app.manager.BlueToothManager;
 import fanfan.app.manager.VersionManager;
+import fanfan.app.model.APIResponse;
+import fanfan.app.model.Response;
 import fanfan.app.service.ForegroundService;
+import fanfan.app.util.SPUtils;
+import fanfan.app.util.StringUtils;
 import fanfan.app.util.Utils; 
 
 public class Application extends android.app.Application {
@@ -24,6 +33,9 @@ public class Application extends android.app.Application {
 		
 		//刷新Html版本
 		VersionManager.getInstrance().refshHtmlVersion(); 
+		
+		//链接蓝牙
+		initBlueToothService();
     }
 	
 	
@@ -59,5 +71,33 @@ public class Application extends android.app.Application {
 		//启动前台通知服务
 		Intent  intent = new Intent(this,ForegroundService.class); 
 		startService(intent);
+	}
+	
+	/**
+	 * 加载蓝牙服务
+	 */
+	private void initBlueToothService() {
+		String blueData = SPUtils.getInstance().getString(SPConstant.blueToothConnect);
+		//获取数据
+		if(!StringUtils.isEmpty(blueData)) {
+			final String [] tempData = blueData.split(";");
+			if(tempData.length>1) {
+				BlueToothManager.getInstrance().startScaneBlue(getApplicationContext(), new Response<Object>() {
+					@Override
+					public void callBack(APIResponse<Object> response) {
+						// TODO Auto-generated method stub
+						Map<String,Object> params = (Map<String,Object>)response;
+						if("stop".equals(params.get("event"))) {
+							BlueToothManager.getInstrance().connectBlue(tempData[1], new Response<Object>() {
+								@Override
+								public void callBack(APIResponse<Object> response) {
+									// TODO Auto-generated method stub
+									System.out.println("链接成功");
+								}});
+						}
+					}
+				});
+			}
+		}
 	}
 }
