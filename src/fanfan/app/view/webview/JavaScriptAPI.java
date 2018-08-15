@@ -63,6 +63,8 @@ public interface JavaScriptAPI {
 	 */
 	void choiceImg(final int takePhoto,String callBackKey);
 	
+	void print(final String orderJsonString,String callBackKey);
+	
 	/**
 	 * 退出app
 	 */

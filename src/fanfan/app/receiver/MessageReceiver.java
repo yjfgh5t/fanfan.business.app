@@ -72,7 +72,7 @@ public class MessageReceiver extends XGPushBaseReceiver {
 					//是否自动打印
 					if("true".equals(SPUtils.getInstance().getString(SPConstant.autoPrint,"true"))){
 						OrderPrintModel printModel = JSONObject.parseObject(params.get("data").toString(), OrderPrintModel.class);
-						PrintManager.getInstrance().printOrder(context, printModel);
+						PrintManager.getInstrance().printOrder(printModel);
 					}
 					break;
 			}

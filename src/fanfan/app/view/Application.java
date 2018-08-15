@@ -35,7 +35,7 @@ public class Application extends android.app.Application {
 		VersionManager.getInstrance().refshHtmlVersion(); 
 		
 		//链接蓝牙
-		initBlueToothService();
+		//initBlueToothService();
     }
 	
 	
@@ -82,6 +82,7 @@ public class Application extends android.app.Application {
 		if(!StringUtils.isEmpty(blueData)) {
 			final String [] tempData = blueData.split(";");
 			if(tempData.length>1) {
+				
 				BlueToothManager.getInstrance().startScaneBlue(getApplicationContext(), new Response<Object>() {
 					@Override
 					public void callBack(APIResponse<Object> response) {

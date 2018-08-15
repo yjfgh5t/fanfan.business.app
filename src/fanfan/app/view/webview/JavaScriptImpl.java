@@ -17,7 +17,9 @@ import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.BlueToothManager;
 import fanfan.app.manager.OkHttpManager;
+import fanfan.app.manager.PrintManager;
 import fanfan.app.model.APIResponse;
+import fanfan.app.model.OrderPrintModel;
 import fanfan.app.model.Response;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.util.SPUtils;
@@ -144,6 +146,9 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		});
 	}
 	
+	/**
+	 * 连接蓝牙
+	 */
 	@Override
 	@JavascriptInterface
 	public void  blueToothConnect(final String address,final String callBackKey) {
@@ -161,6 +166,21 @@ public class JavaScriptImpl implements JavaScriptAPI {
 						});
 					}
 				});
+	}
+	
+	/**
+	 * 打印
+	 */
+	@Override
+	@JavascriptInterface
+	public void print(final String orderJsonString,final String callBackKey) {
+		new Handler().post(new Runnable() {
+			public void run() {
+				OrderPrintModel printModel = JSONObject.parseObject(orderJsonString, OrderPrintModel.class);
+				PrintManager.getInstrance().printOrder(printModel);
+				webViewCallBack("true", callBackKey);
+			}
+		});
 	}
 	
 	

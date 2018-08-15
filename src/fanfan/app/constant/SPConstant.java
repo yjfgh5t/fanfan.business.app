@@ -36,6 +36,11 @@ public class SPConstant {
 	public static final String autoPrint ="sp_auto_print";
 	
 	/**
+	 * 店铺名称
+	 */
+	public static final String shopName ="sp_shop_name";
+	
+	/**
 	 * 链接的蓝牙
 	 */
 	public static final String blueToothConnect="sp_blue_tooth_connect";
