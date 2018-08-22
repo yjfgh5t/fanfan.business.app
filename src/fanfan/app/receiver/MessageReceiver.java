@@ -71,8 +71,13 @@ public class MessageReceiver extends XGPushBaseReceiver {
 					MediaManager.getInstrance().playNewOrder();
 					//是否自动打印
 					if("true".equals(SPUtils.getInstance().getString(SPConstant.autoPrint,"true"))){
+						try {
 						OrderPrintModel printModel = JSONObject.parseObject(params.get("data").toString(), OrderPrintModel.class);
+						
 						PrintManager.getInstrance().printOrder(printModel);
+						}catch(Exception ex) {
+							System.out.println(ex);
+						}
 					}
 					break;
 			}

@@ -51,7 +51,6 @@ public class OrderPrintModel {
 	 /**
 	  * 订单详情
 	  */
-	 @JSONField(name="detailList")
 	 private List<OrderDetailPrintModel> details;
 
 	public String getOrderNum() {

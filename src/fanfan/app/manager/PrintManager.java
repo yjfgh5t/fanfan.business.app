@@ -36,8 +36,7 @@ public class PrintManager {
 	
 	static int newOrderPlayCount=0;
 	
-	public static final SimpleDateFormat formatTimestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+	public static final SimpleDateFormat formatTimestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 	
 	public static PrintManager getInstrance() {
 		if (instance == null) {
@@ -50,22 +49,25 @@ public class PrintManager {
 	 * 打印订单
 	 */
 	public void printOrder(final OrderPrintModel printModel) {
-		//开启线程打印
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					Thread.sleep(1000);
-					blueToothPrint(printModel);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
 		
-		thread.run();
+		blueToothPrint(printModel);
+		
+		//开启线程打印
+//		Thread thread = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				try {
+//					Thread.sleep(1000);
+//				
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//		
+//		thread.run();
 	}
 
 	
@@ -75,11 +77,15 @@ public class PrintManager {
 	 * @param webView
 	 */
 	@SuppressLint("NewApi")
-	public void blueToothPrint(OrderPrintModel printModel) {
+	public boolean blueToothPrint(OrderPrintModel printModel) {
 		BluetoothDevice device = BlueToothUtils.getInstance().getCurrentDevice();
 		try {
-			BluetoothSocket socket =  device.createRfcommSocketToServiceRecord(device.getUuids()[0].getUuid());
-			socket.connect();
+			
+			BluetoothSocket socket = BlueToothUtils.getInstance().getScoket();
+			
+			if(socket==null) {
+				return false;
+			}
 			PrintUtils.setOutputStream(socket.getOutputStream());
 			
 			PrintUtils.selectCommand(PrintUtils.RESET);
@@ -115,12 +121,16 @@ public class PrintManager {
 			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
 			PrintUtils.printText("备注："+printModel.getOrderRemark());
 			PrintUtils.printText("\n\n\n\n\n");
-			socket.getOutputStream().close();
-			socket.close();
+			//socket.getOutputStream().close();
+			//socket.close();
+			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return false;
+		
 	}
 	
 }

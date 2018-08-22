@@ -60,7 +60,6 @@ public class BlueToothManager {
 		
 		try {
 		connetCallResponse = call;
-		
 		//开始链接蓝牙
 		BlueToothUtils.getInstance().connectLeDevice(address);
 		}catch(Exception ex) {

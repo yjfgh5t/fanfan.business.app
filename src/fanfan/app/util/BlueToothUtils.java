@@ -11,15 +11,19 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.widget.Toast;
 import fanfan.app.model.BlueToothModel;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -48,6 +52,7 @@ public class BlueToothUtils {
     //作为中央来使用和处理数据；
     private BluetoothGatt mGatt;
 
+    private BluetoothSocket socket;
     private BluetoothManager manager;
     private BTUtilListener mListener;
     private BluetoothDevice mCurDevice;
@@ -59,7 +64,7 @@ public class BlueToothUtils {
     private BluetoothGattService service;
     private BluetoothGattCharacteristic character1;
     private BluetoothGattCharacteristic character2;
-
+    UUID uuid = UUID.fromString(characterUUID1);
 
     public static synchronized BlueToothUtils getInstance() {
         if (mInstance == null) {
@@ -74,12 +79,35 @@ public class BlueToothUtils {
         init();
     }
     
-    public BluetoothDevice getCurrentDevice() {
-    	
+    
+    public BluetoothDevice getCurrentDevice() { 
     	return mCurDevice;
     }
     
-    public  String parseAdertisedData(byte[] advertisedData) {      
+    /**
+     * 链接蓝牙
+     * @return
+     */
+    public BluetoothSocket getScoket() {
+    	if(socket==null) {
+    		//停止搜索蓝牙
+    		stopScan();
+    		try {
+				socket = mCurDevice.createRfcommSocketToServiceRecord(uuid);
+				if(socket!=null) {
+					socket.connect();
+					return socket;
+				} 				
+			}catch(IOException ex) {
+				Log.e("链接蓝牙异常", "链接蓝牙失败", ex);
+				socket=null;
+			}
+    	}
+    	
+    	return socket;
+    }
+    
+    public String parseAdertisedData(byte[] advertisedData) {      
         List<UUID> uuids = new ArrayList<UUID>();
         String name = null;
         if( advertisedData == null ){
@@ -126,9 +154,7 @@ public class BlueToothUtils {
             }
         return name;
     }
-
-
-
+ 
     public void init() {
         listDevice = new ArrayList<>();
         if (!mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -319,6 +345,8 @@ public class BlueToothUtils {
         	}
         }
         checkConnGatt();
+        
+        socket=null;
     }
 
     //发送进入工作模式请求
