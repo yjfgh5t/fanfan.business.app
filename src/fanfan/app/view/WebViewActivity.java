@@ -20,6 +20,7 @@ import android.view.View;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.manager.MediaManager;
 import fanfan.app.manager.PrintManager;
+import fanfan.app.util.BlueUtils;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.view.webview.JavaScriptAPI;
 import fanfan.app.view.webview.JavaScriptImpl;
@@ -39,8 +40,8 @@ public class WebViewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_web_view);
 		webView = (X5WebView) findViewById(R.id.full_web_webview);
-		
 		initWebView();
+		BlueUtils.getInstance().init(this);
 	}
 
 	/**

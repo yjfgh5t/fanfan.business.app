@@ -1,6 +1,7 @@
 package fanfan.app.view;
  
-import fanfan.app.constant.UrlConstant; 
+import fanfan.app.constant.UrlConstant;
+import fanfan.app.manager.BlueToothManager;
 import fanfan.app.manager.OkHttpManager;
 import fanfan.app.manager.VersionManager;
 import fanfan.app.model.APIResponse;
@@ -9,7 +10,11 @@ import fanfan.app.util.ActivityUtils;
 import fanfan.app.util.StringUtils;
 import fanfan.app.util.ToastUtils;
 import fanfan.app.util.Utils;
-import fanfan.business.app.R; 
+import fanfan.business.app.R;
+
+import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
@@ -91,8 +96,19 @@ public class MainActivity extends Activity {
 	 * 验证输入的值
 	 * @return
 	 */
-	private boolean checkEditVal() {
-	 
+	private boolean checkEditVal() { 
+		
+		BlueToothManager.getInstrance().connectBlue("57:4C:54:15:0C:7E", new Response<Object>() {
+			@Override
+			public void callBack(APIResponse<Object> response) {
+				// TODO Auto-generated method stub
+				// TODO Auto-generated method stub
+			}
+			
+		});
+		
+		
+		
 		if(StringUtils.isEmpty(viewUserName.getText().toString())) {
 			ToastUtils.showShort(R.string.empty_username);
 			return false;

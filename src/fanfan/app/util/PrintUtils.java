@@ -51,8 +51,12 @@ public class PrintUtils {
     public static void printText(String text) {
         try {
             byte[] data = text.getBytes("gbk");
-            outputStream.write(data, 0, data.length);
-            outputStream.flush();
+            if(outputStream!=null) {
+	            outputStream.write(data, 0, data.length);
+	            outputStream.flush();
+            }else {
+            	BlueUtils.getInstance().write(data);
+            }
         } catch (IOException e) {
             //Toast.makeText(this.context, "发送失败！", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -66,8 +70,12 @@ public class PrintUtils {
      */
     public static void selectCommand(byte[] command) {
         try {
-            outputStream.write(command);
-            outputStream.flush();
+        	if(outputStream!=null) {
+	            outputStream.write(command);
+	            outputStream.flush();
+        	}else {
+        		BlueUtils.getInstance().write(command);
+        	}
         } catch (IOException e) {
             //Toast.makeText(this.context, "发送失败！", Toast.LENGTH_SHORT).show();
             e.printStackTrace();

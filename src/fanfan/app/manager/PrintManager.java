@@ -1,6 +1,7 @@
 package fanfan.app.manager;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -21,6 +22,8 @@ import fanfan.app.model.OrderDetailPrintModel;
 import fanfan.app.model.OrderPrintModel;
 import fanfan.app.model.Response; 
 import fanfan.app.util.BlueToothUtils;
+import fanfan.app.util.BlueUtils;
+import fanfan.app.util.BluetoothConnector.BluetoothSocketWrapper;
 import fanfan.app.util.PrintUtils;
 import fanfan.app.util.SPUtils;
 import fanfan.app.view.webview.X5WebView;
@@ -80,20 +83,25 @@ public class PrintManager {
 	public boolean blueToothPrint(OrderPrintModel printModel) {
 		BluetoothDevice device = BlueToothUtils.getInstance().getCurrentDevice();
 		try {
-			
-			BluetoothSocket socket = BlueToothUtils.getInstance().getScoket();
-			
-			if(socket==null) {
-				return false;
-			}
-			PrintUtils.setOutputStream(socket.getOutputStream());
-			
+//			BlueUtils.getInstance().write(PrintUtils.RESET);
+//			BlueUtils.getInstance().write(PrintUtils.RESET);
+//			BlueUtils.getInstance().write(PrintUtils.RESET);
+//			BlueUtils.getInstance().write(printModel.getOrderNum().getBytes());
+//			
+//			OutputStream outputStream = BlueToothUtils.getInstance().getSocketWrapper();
+//			//OutputStream outputStream = BlueUtils.getInstance().getOutputStream();
+//			if(outputStream==null) {
+//				return false;
+//			}
+//			PrintUtils.setOutputStream(outputStream);
+			String data="饭饭点餐ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			PrintUtils.selectCommand(PrintUtils.RESET);
 			PrintUtils.selectCommand(PrintUtils.LINE_SPACING_DEFAULT);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_CENTER);
-			PrintUtils.printText(SPUtils.getInstance().getString(SPConstant.shopName,"饭饭点餐") +"\n\n");
+			PrintUtils.printText(SPUtils.getInstance().getString(SPConstant.shopName,"饭饭点餐") +"\n\n"); 
 			PrintUtils.selectCommand(PrintUtils.DOUBLE_HEIGHT_WIDTH);
-			PrintUtils.printText("#"+printModel.getOrderDateNum()+" 桌号："+printModel.getOrderDeskNum()+"\n\n");
+			PrintUtils.printText("#"+printModel.getOrderDateNum()+"\n");
+			PrintUtils.printText("桌号："+printModel.getOrderDeskNum()+"\n\n");
 			PrintUtils.selectCommand(PrintUtils.NORMAL);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
 			PrintUtils.printText(PrintUtils.printTwoData("订单编号",printModel.getOrderNum()+"\n"));
@@ -124,7 +132,7 @@ public class PrintManager {
 			//socket.getOutputStream().close();
 			//socket.close();
 			return true;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -9,12 +9,14 @@ import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
+import android.widget.Toast;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.manager.BlueToothManager;
 import fanfan.app.manager.VersionManager;
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.Response;
 import fanfan.app.service.ForegroundService;
+import fanfan.app.util.BlueUtils;
 import fanfan.app.util.SPUtils;
 import fanfan.app.util.StringUtils;
 import fanfan.app.util.Utils; 
@@ -24,7 +26,7 @@ public class Application extends android.app.Application {
 
 	@Override
 	public void onCreate() {
-		
+		Log.d("进入应用程序", "进入应用程序");
 		//加载选择X5内核
 		initTBS();
 		
@@ -35,7 +37,7 @@ public class Application extends android.app.Application {
 		VersionManager.getInstrance().refshHtmlVersion(); 
 		
 		//链接蓝牙
-		//initBlueToothService();
+		//initBlueToothService(); 
     }
 	
 	
