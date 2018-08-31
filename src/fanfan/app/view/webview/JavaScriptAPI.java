@@ -63,6 +63,23 @@ public interface JavaScriptAPI {
 	 */
 	void choiceImg(final int takePhoto,String callBackKey);
 	
+	/**
+	 * 扫码
+	 * @param callBackKey
+	 */
+	void scanQRCode(String callBackKey);
+	
+	/**
+	 * 扫码返回
+	 * @param data
+	 */
+	void resultScanQRCode(String data);
+	
+	/**
+	 * 打印
+	 * @param orderJsonString
+	 * @param callBackKey
+	 */
 	void print(final String orderJsonString,String callBackKey);
 	
 	/**

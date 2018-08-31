@@ -17,6 +17,11 @@ public class CodeConstant {
 	public static final int Code_Cut_Back=0x4;
 	
 	/**
+	 * 扫码返回
+	 */
+	public static final int Code_San_QRCode=0x5;
+	
+	/**
 	 * 通知消息key
 	 */
 	public static final String Notify_Msg_CallKey = "notify_msg";

@@ -10,9 +10,11 @@ import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.BlueToothManager;
@@ -24,6 +26,7 @@ import fanfan.app.model.Response;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.util.SPUtils;
 import fanfan.app.util.Utils;
+import fanfan.app.view.ScanActivity;
 import fanfan.app.view.WebViewActivity;
 
 public class JavaScriptImpl implements JavaScriptAPI {
@@ -32,7 +35,7 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	
 	WebViewActivity webViewActivity;
 	
-	private String choiseCallbackKey,loadingKey="loading";
+	private String choiseCallbackKey,sacnQRCodeCallbackKey,loadingKey="loading";
 	
 	private static JavaScriptImpl instrance;
 	
@@ -168,6 +171,27 @@ public class JavaScriptImpl implements JavaScriptAPI {
 				});
 	}
 	
+
+	/**
+	 * 扫码
+	 */
+	@Override
+	@JavascriptInterface
+	public void scanQRCode(String callBackKey) {
+		sacnQRCodeCallbackKey = callBackKey;
+		// TODO Auto-generated method stub
+		new Handler().post(new Runnable() {
+			public void run() {
+			 webViewActivity.startActivityForResult(new Intent(webViewActivity, ScanActivity.class),CodeConstant.Code_San_QRCode);
+			}
+		});
+	}
+	
+	@Override
+	public void resultScanQRCode(String data) {
+		webViewCallBack(data, sacnQRCodeCallbackKey);
+	}
+	
 	/**
 	 * 打印
 	 */
@@ -296,4 +320,5 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	           }
 		});
 	}
+
 }

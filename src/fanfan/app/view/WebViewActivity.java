@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import fanfan.app.constant.CodeConstant;
+import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.MediaManager;
 import fanfan.app.manager.PrintManager;
 import fanfan.app.util.BlueUtils;
@@ -34,6 +35,8 @@ public class WebViewActivity extends Activity {
 	JavaScriptAPI javaScriptAPI;
 	
 	private static String tempFile="temp_photo.jpg";
+	
+	public static int activity_result_scan=2;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,11 @@ public class WebViewActivity extends Activity {
             	//获取图片
             	javaScriptAPI.uploadFile(PhotoUtil.getFile(true));
             	break;
+            case CodeConstant.Code_San_QRCode:
+            	if(data!=null && data.hasExtra("result")) {
+            		javaScriptAPI.resultScanQRCode(data.getStringExtra("result"));
+            	}
+            	break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -94,8 +102,7 @@ public class WebViewActivity extends Activity {
 	private void initWebView() {
 		//加载Url地址
 		//webView.loadUrl(VersionManager.getInstrance().getIndexPath());
-		
-		webView.loadUrl("http://192.168.1.10:8080");
+		webView.loadUrl(UrlConstant.test_domain);
 		 
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
