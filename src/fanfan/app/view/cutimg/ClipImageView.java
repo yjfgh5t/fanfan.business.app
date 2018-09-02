@@ -23,7 +23,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
-import eu.janmuller.android.simplecropimage.R;
+import fanfan.business.app.R;
 
 /**
  * @author 黄浩杭 (huanghaohang@parkingwang.com)

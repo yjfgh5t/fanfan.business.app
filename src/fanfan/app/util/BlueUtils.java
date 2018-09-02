@@ -24,10 +24,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Message;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.widget.Toast;
+import fanfan.app.constant.SPConstant;
 
 @SuppressLint("NewApi")
 public class BlueUtils {
@@ -38,15 +40,22 @@ public class BlueUtils {
 	private BluetoothDevice mCurDevice;
 	private BluetoothGattCallback mGattCallback;
 	private BluetoothGatt toothGatt;
-	private BroadcastReceiver mReceiver;
+	private BroadcastReceiver mFoundReceiver;
+	private BroadcastReceiver mStateReceiver;
 	private BluetoothGattService gattService;
 	private List<BluetoothGattService> gattServices;
 	private List<BluetoothGattCharacteristic> gattCharacteristic;
 	private int characteristicIndex=0;
 	/**
+	 * 蓝牙链接失败 自动链接次数
+	 */
+	private int autoConnectCount=0;
+	/**
 	 * 蓝牙配对成功后 自动绑定
 	 */
-	private boolean autoConnectBlue=false;
+	private boolean hasConnect=false;
+	
+	
 	// 通用串口UUID
 	public static UUID cannelUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 	
@@ -87,8 +96,9 @@ public class BlueUtils {
 		if (pairedDevices == null) {
 			pairedDevices = new HashSet<>();
 		}
-
-		mReceiver = new BroadcastReceiver() {
+		
+		//找到设备广播
+		mFoundReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 
@@ -98,20 +108,36 @@ public class BlueUtils {
 				String action = intent.getAction(); 
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE); 
 				if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-					pairedDevices.add(device);
-					utilListener.onLeScanDevices(device,device.getName());
+					if(!pairedDevices.contains(device)) {
+						pairedDevices.add(device);
+						utilListener.onLeScanDevices(device,device.getName());
+					}
 				} else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
 					utilListener.onLeScanStart();
 				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 					utilListener.onLeScanStop();
 					//注销广播
-					context.unregisterReceiver(mReceiver);
-				}else if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+					context.unregisterReceiver(mFoundReceiver);
+				}
+			}
+		};
+		
+		//蓝牙状态更改广播
+		mStateReceiver = new BroadcastReceiver() {
+			
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				// TODO Auto-generated method stub
+				if (utilListener == null) {
+					return;
+				}
+				String action = intent.getAction(); 
+				if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
 				    int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR);
 				    switch (state) {
 				        case BluetoothAdapter.STATE_OFF:
 				            Log.d("aaa", "STATE_OFF 手机蓝牙关闭");
-				            closeToothGatt();
+				            closeToothGatt(toothGatt);
 				            break;
 				        case BluetoothAdapter.STATE_TURNING_OFF:
 				            Log.d("aaa", "STATE_TURNING_OFF 手机蓝牙正在关闭");
@@ -138,29 +164,39 @@ public class BlueUtils {
 	    mGattCallback = new BluetoothGattCallback() {
 				@Override
 				public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-					
+					super.onConnectionStateChange(gatt, status, newState);
 					switch (newState) {
 					//蓝牙链接成功
 					case BluetoothProfile.STATE_CONNECTED:
+						//autoConnectCount=0;
 						utilListener.onConnected(mCurDevice);
 						//搜索蓝牙服务
 						gatt.discoverServices();
+						//是否链接
+						hasConnect=true;
 						break;
-					//蓝牙端口链接
+					//蓝牙链接失败 蓝牙禁止链接
+					//case BluetoothProfile.STATE_DISCONNECTING:
 					case BluetoothProfile.STATE_DISCONNECTED:
-						utilListener.onDisConnected(mCurDevice);
+						if(hasConnect) {
+							//设置链接失败
+							hasConnect=false;
+							//异步获取链接状态
+							gatt.connect(); 
+						}else { 
+							utilListener.onDisConnected(mCurDevice);
+							closeToothGatt(gatt);
+							if(autoConnectCount<3 && mCurDevice!=null) {
+								autoConnectCount++;
+								connect(mCurDevice.getAddress());
+							}
+						}
 						break;
 					//蓝牙链接中
 					case BluetoothProfile.STATE_CONNECTING:
 						utilListener.onConnecting(mCurDevice); 
 						break;
-					//蓝牙禁止链接中
-					case BluetoothProfile.STATE_DISCONNECTING:
-						utilListener.onDisConnecting(mCurDevice); 
-						closeToothGatt();
-						break;
 					}
-					super.onConnectionStateChange(gatt, status, newState);
 				}
 				
 				@Override
@@ -178,8 +214,12 @@ public class BlueUtils {
 						 //Log.e("BlueUtils", "写入成功");
 					}
 				}
-				
 		};
+		
+		
+		//注册监听广播
+		IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+		context.registerReceiver(mStateReceiver, filter);
 		
 		return mInstance;
 	}
@@ -280,10 +320,20 @@ public class BlueUtils {
 	
 	/**
 	 * 关闭Gatt
+	 * @throws InterruptedException 
 	 */
-	private void closeToothGatt() {
-		if(toothGatt!=null) {
-			toothGatt.close();
+	private void closeToothGatt(BluetoothGatt gatt){
+		if(gatt!=null) {
+			gatt.disconnect();
+			gatt.close();
+			gatt=null;
+		}
+		
+		try {
+			Thread.sleep(800);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -298,10 +348,9 @@ public class BlueUtils {
 		if (!open(false)) {
 			return;
 		}
-
-		//注册监听广播
+		
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-		context.registerReceiver(mReceiver, filter);
+		context.registerReceiver(mFoundReceiver, filter);
 		
 		BluetoothAdapter bTAdatper = BluetoothAdapter.getDefaultAdapter();
 
@@ -323,7 +372,7 @@ public class BlueUtils {
 			// 停止搜索蓝牙设备
 			bTAdatper.cancelDiscovery();
 			//注销广播
-			context.unregisterReceiver(mReceiver);
+			context.unregisterReceiver(mFoundReceiver);
 		}
 		utilListener.onLeScanStop();
 	}
@@ -334,6 +383,11 @@ public class BlueUtils {
 	 */
 	public void connect(String address) {
 
+		// 是否开启蓝牙
+		if (!open(false)) {
+			return;
+		}
+		
 		stopScan();
 		
 		// 获得设备 
@@ -344,15 +398,17 @@ public class BlueUtils {
 			return;
 		}
 		
-		if(toothGatt==null) {
-			toothGatt = mCurDevice.connectGatt(context, true, mGattCallback);
+		if(toothGatt!=null) {
+			toothGatt.disconnect();
+			toothGatt.close();
+			toothGatt=null;
+		}
+		
+		//判断是否是6.0版本以上
+		if(Build.VERSION.SDK_INT>22) {
+			toothGatt = mCurDevice.connectGatt(context, false, mGattCallback,BluetoothDevice.TRANSPORT_LE);
 		}else {
-			if(toothGatt.connect()) {
-				Log.e("BlueUtils", "toothGatt---> connect:true");
-			}else {
-				toothGatt.disconnect();
-				toothGatt = mCurDevice.connectGatt(context, true, mGattCallback);
-			}
+			toothGatt = mCurDevice.connectGatt(context, false, mGattCallback);
 		}
 	}
 	

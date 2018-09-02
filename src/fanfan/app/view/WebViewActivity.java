@@ -51,7 +51,9 @@ public class WebViewActivity extends Activity {
 	 * 操作返回
 	 */
 	@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
         if (resultCode != RESULT_OK) { 
             return;
         }
@@ -76,7 +78,6 @@ public class WebViewActivity extends Activity {
             	}
             	break;
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 	
 	/**

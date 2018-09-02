@@ -18,7 +18,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import eu.janmuller.android.simplecropimage.R;
+import fanfan.business.app.R;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
