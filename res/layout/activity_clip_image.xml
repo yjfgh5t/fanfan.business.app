@@ -11,10 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom"
-        app:civClipCircle="false"
+        app:civClipCircle="1"
         app:civClipPadding="@dimen/padding_common"
         app:civClipRoundCorner="5dp"
-        app:civHeight="2"
+        app:civHeight="3"
         app:civMaskColor="@color/viewfinder_mask"
         app:civWidth="3" />
 

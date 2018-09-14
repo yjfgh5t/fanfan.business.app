@@ -9,7 +9,7 @@
         <attr name="civMaskColor" format="color" />
         <attr name="civClipPadding" format="dimension" />
         <attr name="civClipRoundCorner" format="dimension|reference" />
-        <attr name="civClipCircle" format="boolean" />
+        <attr name="civClipCircle" format="integer" />
     </declare-styleable>
     
     <!-- 扫码 -->

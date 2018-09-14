@@ -75,7 +75,8 @@ public class ClipImageView extends ImageView implements
     private Rect mClipBorder = new Rect();
     private int mMaxOutputWidth = 0;
 
-    private boolean mDrawCircleFlag;
+    //0:圆  1:长方形   2:正方形
+    private int mDrawCircleFlag=0;
     private float mRoundCorner;
 
     public ClipImageView(Context context) {
@@ -117,7 +118,7 @@ public class ClipImageView extends ImageView implements
         mClipPadding = ta.getDimensionPixelSize(R.styleable.ClipImageView_civClipPadding, 0);
         mTipText = ta.getString(R.styleable.ClipImageView_civTipText);
         mMaskColor = ta.getColor(R.styleable.ClipImageView_civMaskColor, 0xB2000000);
-        mDrawCircleFlag = ta.getBoolean(R.styleable.ClipImageView_civClipCircle, false);
+        mDrawCircleFlag = ta.getInteger(R.styleable.ClipImageView_civClipCircle, 0);
         mRoundCorner = ta.getDimension(R.styleable.ClipImageView_civClipRoundCorner, 0);
         final int textSize = ta.getDimensionPixelSize(R.styleable.ClipImageView_civTipTextSize, 24);
         mPaint.setTextSize(textSize);
@@ -329,13 +330,20 @@ public class ClipImageView extends ImageView implements
         mClipBorder.left = mClipPadding;
         mClipBorder.right = width - mClipPadding;
         final int borderHeight = mClipBorder.width() * mAspectY / mAspectX;
-        if (mDrawCircleFlag == true) { // 如果是圆形,宽高比例是1:1
-            final int borderTempHeight = mClipBorder.width() * 1 / 1;
-            mClipBorder.top = (height - borderTempHeight) / 2;
-            mClipBorder.bottom = mClipBorder.top + borderTempHeight;
-        } else { // 如果不是圆形,根据宽高比例
-            mClipBorder.top = (height - borderHeight) / 2;
+        switch(mDrawCircleFlag) {
+        //圆
+        case 0:
+        //正方形
+        case 1:
+        	  final int borderTempHeight = mClipBorder.width() * 1 / 1;
+              mClipBorder.top = (height - borderTempHeight) / 2;
+              mClipBorder.bottom = mClipBorder.top + borderTempHeight;
+        break;
+        //长方形
+        case 2:
+        	mClipBorder.top = (height - borderHeight) / 2;
             mClipBorder.bottom = mClipBorder.top + borderHeight;
+        	break;
         }
     }
 
@@ -524,14 +532,21 @@ public class ClipImageView extends ImageView implements
         transparentPaint.setColor(Color.TRANSPARENT);
         temp.drawRect(0, 0, temp.getWidth(), temp.getHeight(), mPaint);
         transparentPaint.setXfermode(porterDuffXfermode);
-        if (mDrawCircleFlag) { // 画圆
-            float cx = mClipBorder.left + mClipBorder.width() / 2f;
-            float cy = mClipBorder.top + mClipBorder.height() / 2f;
-            float radius = mClipBorder.height() / 2f;
-            temp.drawCircle(cx, cy, radius, transparentPaint);
-        } else { // 画矩形(可以设置矩形的圆角)
-            RectF rectF = new RectF(mClipBorder.left, mClipBorder.top, mClipBorder.right, mClipBorder.bottom);
-            temp.drawRoundRect(rectF, mRoundCorner, mRoundCorner, transparentPaint);
+        switch(mDrawCircleFlag) {
+        //圆
+        case 0:
+        	 float cx = mClipBorder.left + mClipBorder.width() / 2f;
+             float cy = mClipBorder.top + mClipBorder.height() / 2f;
+             float radius = mClipBorder.height() / 2f;
+             temp.drawCircle(cx, cy, radius, transparentPaint);
+        	break;
+        //正方形
+        case 1:
+        //长方形
+        case 2:
+        	 RectF rectF = new RectF(mClipBorder.left, mClipBorder.top, mClipBorder.right, mClipBorder.bottom);
+             temp.drawRoundRect(rectF, mRoundCorner, mRoundCorner, transparentPaint);
+        	break;
         }
         canvas.drawBitmap(bitmap, 0, 0, null);
     }
