@@ -259,11 +259,10 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		if(file==null) {
 			return;
 		}
-		
 		// TODO Auto-generated method stub
 		final Map<String,Object> params = new HashMap<>();
     	params.put("content-type", "uploadFile");
-    	params.put("content", PhotoUtil.getFile(true));
+    	params.put("content", file);
     	OkHttpManager.getInstrance().post(UrlConstant.uploadFile, params, new Response<String>() {
 
 			@Override

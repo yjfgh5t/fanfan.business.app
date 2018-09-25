@@ -239,7 +239,14 @@ public class BlueUtils {
 			// 开启蓝牙
 			if(!bTAdatper.enable()) {
 				Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-				context.startActivity(enableBtIntent);
+				context.startActivity(enableBtIntent); 
+			}
+			//蓝牙启动 需要时间 线程等待5s
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		// 开启被其它蓝牙设备发现的功能
@@ -403,12 +410,15 @@ public class BlueUtils {
 			toothGatt.close();
 			toothGatt=null;
 		}
-		
+		try {
 		//判断是否是6.0版本以上
 		if(Build.VERSION.SDK_INT>22) {
 			toothGatt = mCurDevice.connectGatt(context, false, mGattCallback,BluetoothDevice.TRANSPORT_LE);
 		}else {
 			toothGatt = mCurDevice.connectGatt(context, false, mGattCallback);
+		}
+		}catch(Exception ex) {
+			utilListener.onDisConnecting(null);
 		}
 	}
 	

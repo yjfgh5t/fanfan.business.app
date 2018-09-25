@@ -2,6 +2,11 @@ package fanfan.app.constant;
 
 public class CodeConstant {
 	/**
+	 * 开发环境
+	 */
+	public static final boolean Is_Dev=false;
+	
+	/**
 	 * 拍照
 	 */
 	public static final int Code_Take_Photo=0x2;
@@ -25,5 +30,4 @@ public class CodeConstant {
 	 * 通知消息key
 	 */
 	public static final String Notify_Msg_CallKey = "notify_msg";
-	
 }

@@ -74,6 +74,9 @@ public class VersionManager {
 				unHtmlZip();
 				//设置版本
 				SPUtils.getInstance().put(SPConstant.htmlVersion, SPConstant.htmlInstallVersion);
+				isRefeash=false;
+				//刷新是否需要更新版本
+				refshHtmlVersion();
 			}
 		//文件不存在 或被删除
 		}else if(!FileUtils.isDir(SPConstant.sdCardWWWPath)){
@@ -92,8 +95,7 @@ public class VersionManager {
 						downLoadHtmlZip(response.getData());
 					}
 				}
-				
-			}); 
+			});
 		}
 		
 		isRefeash=false;

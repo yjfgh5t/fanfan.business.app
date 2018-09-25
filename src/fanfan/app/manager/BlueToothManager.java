@@ -6,22 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.inuker.bluetooth.library.BluetoothClient;
-import com.inuker.bluetooth.library.beacon.Beacon;
-import com.inuker.bluetooth.library.connect.options.BleConnectOptions;
-import com.inuker.bluetooth.library.connect.response.BleConnectResponse;
-import com.inuker.bluetooth.library.model.BleGattProfile;
-import com.inuker.bluetooth.library.receiver.listener.BluetoothBondListener;
-import com.inuker.bluetooth.library.search.SearchRequest;
-import com.inuker.bluetooth.library.search.SearchResult;
-import com.inuker.bluetooth.library.search.response.SearchResponse;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.provider.SyncStateContract.Constants;
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.BlueToothModel;
 import fanfan.app.model.Response;
-import fanfan.app.util.BlueToothUtils;
 import fanfan.app.util.BlueUtils;
 import fanfan.app.util.BlueUtils.BTUtilListener;
 

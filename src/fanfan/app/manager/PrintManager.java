@@ -52,25 +52,7 @@ public class PrintManager {
 	 * 打印订单
 	 */
 	public void printOrder(final OrderPrintModel printModel) {
-		
 		blueToothPrint(printModel);
-		
-		//开启线程打印
-//		Thread thread = new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				// TODO Auto-generated method stub
-//				try {
-//					Thread.sleep(1000);
-//				
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//		
-//		thread.run();
 	}
 
 	
@@ -83,18 +65,6 @@ public class PrintManager {
 	public boolean blueToothPrint(OrderPrintModel printModel) {
 		BluetoothDevice device = BlueToothUtils.getInstance().getCurrentDevice();
 		try {
-//			BlueUtils.getInstance().write(PrintUtils.RESET);
-//			BlueUtils.getInstance().write(PrintUtils.RESET);
-//			BlueUtils.getInstance().write(PrintUtils.RESET);
-//			BlueUtils.getInstance().write(printModel.getOrderNum().getBytes());
-//			
-//			OutputStream outputStream = BlueToothUtils.getInstance().getSocketWrapper();
-//			//OutputStream outputStream = BlueUtils.getInstance().getOutputStream();
-//			if(outputStream==null) {
-//				return false;
-//			}
-//			PrintUtils.setOutputStream(outputStream);
-			String data="饭饭点餐ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			PrintUtils.selectCommand(PrintUtils.RESET);
 			PrintUtils.selectCommand(PrintUtils.LINE_SPACING_DEFAULT);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_CENTER);

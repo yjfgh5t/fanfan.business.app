@@ -18,7 +18,7 @@ public class SPConstant {
 	/**
 	 * html当前安装自带版本
 	 */
-	public static final String htmlInstallVersion="1.0.0";
+	public static final String htmlInstallVersion="1.0.2";
 	
 	/**
 	 * 前台通知标题
