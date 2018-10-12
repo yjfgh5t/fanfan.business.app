@@ -20,6 +20,7 @@ import fanfan.app.util.FileIOUtils;
 import fanfan.app.util.FileUtils;
 import fanfan.app.util.ResourceUtils;
 import fanfan.app.util.SPUtils;
+import fanfan.app.util.StringUtils;
 import fanfan.app.util.ZipUtils;
 import fanfan.app.view.webview.JavaScriptImpl;
 
@@ -71,15 +72,14 @@ public class VersionManager {
 		//未安装 /文件被删除
 		if(getCurrentHtmlVersion().equals("0.0.0") || !FileUtils.isDir(SPConstant.sdCardWWWPath)) {
 			//copy assets至SDCard
-			Boolean success = ResourceUtils.copyFileFromAssets(assetsPath, SPConstant.sdCardWWWPath+"/www.zip");
+			Boolean success = ResourceUtils.copyFileFromAssets(assetsPath, SPConstant.sdCardPath+"/temp/www.zip");
 			if(success) {
 				//解压文件
-				unHtmlZip();
-				//设置版本
-				SPUtils.getInstance().put(SPConstant.htmlVersion, SPConstant.htmlInstallVersion);
-				isRefeash=false;
-				//刷新是否需要更新版本
-				refshHtmlVersion();
+				if(unHtmlZip(SPConstant.htmlInstallVersion,"")) {
+					isRefeash=false;
+					//刷新是否需要更新版本
+					refshHtmlVersion();
+				}
 			}
 		//检查新版本
 		}else{
@@ -90,7 +90,7 @@ public class VersionManager {
 					if(response.isSuccess()) {
 						VersionModel version = response.getData().toJavaObject(VersionModel.class);
 						//或者有新版本是 下载文件
-						if(!version.getHtmlVersion().equals(getCurrentHtmlVersion())) {
+						if(version!=null && !version.getHtmlVersion().equals(getCurrentHtmlVersion())) {
 							downLoadHtmlZip(version);
 						}
 					}
@@ -123,36 +123,42 @@ public class VersionManager {
 					
 					if(writeSuccess && FileUtils.isFile(SPConstant.sdCardPath+"/temp/www.zip")){
 						//解压文件
-						if(unHtmlZip()) {
-							//删除old文件
-							if(FileUtils.deleteAllInDir(SPConstant.sdCardWWWPath)) {
-								//coup新文件
-								if(FileUtils.copyDir(SPConstant.sdCardPath+"/temp/www/", SPConstant.sdCardWWWPath+"/")) {
-									//设置版本
-									SPUtils.getInstance().put(SPConstant.htmlVersion, version.getHtmlVersion());
-									SPUtils.getInstance().put(SPConstant.downLoadAPKVersion, version.getAndroidVersion());
-									//发送更新版本消息
-									if(JavaScriptImpl.getInstrance()!=null) {
-										JavaScriptImpl.getInstrance().webViewCallBack("", CodeConstant.Notify_Msg_CallKey+".new-version");
-									}
-								}
-							}
-						}
+						unHtmlZip(version.getHtmlVersion(),version.getAndroidVersion());
 					}
 				}
 			}
 		});
 	}
 	
-	private boolean unHtmlZip() {
+	/**
+	 * 解压文件
+	 * @param htmlVersion
+	 * @param androidVersion
+	 * @return
+	 */
+	private boolean unHtmlZip(String htmlVersion,String androidVersion) {
 		try {
 		 //删除 temp/www 文件
 		 FileUtils.deleteAllInDir(SPConstant.sdCardPath+"/temp/www");
 		 List<File> files  = ZipUtils.unzipFile(SPConstant.sdCardPath+"/temp/www.zip", SPConstant.sdCardPath+"/temp/www/");
-		 for(File file:files) {
-			 Log.d("解压文件", file.getName());
-		 }
-		 return true;
+		 
+		 if(FileUtils.deleteAllInDir(SPConstant.sdCardWWWPath)) {
+				//coup新文件
+				if(FileUtils.copyDir(SPConstant.sdCardPath+"/temp/www/", SPConstant.sdCardWWWPath+"/")) {
+					//设置版本
+					SPUtils.getInstance().put(SPConstant.htmlVersion, htmlVersion);
+					
+					//通知更新apk
+					if(!StringUtils.isEmpty(androidVersion)) {
+						SPUtils.getInstance().put(SPConstant.downLoadAPKVersion, androidVersion);
+						//发送更新版本消息
+						if(JavaScriptImpl.getInstrance()!=null) {
+							JavaScriptImpl.getInstrance().webViewCallBack("", CodeConstant.Notify_Msg_CallKey+".new-version");
+						}
+					}
+					return true;
+				}
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

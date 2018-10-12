@@ -47,8 +47,8 @@ public class WebViewActivity extends Activity {
 
 	private static String tempFile = "temp_photo.jpg";
 
-	public static int activity_result_scan = 2;
-
+	public static int activity_result_scan = 2; 
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

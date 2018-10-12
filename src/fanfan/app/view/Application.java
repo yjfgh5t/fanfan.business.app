@@ -26,7 +26,7 @@ public class Application extends android.app.Application {
 
 	@Override
 	public void onCreate() {
-		Log.d("进入应用程序", "进入应用程序");
+		try {
 		//加载选择X5内核
 		initTBS();
 		
@@ -36,6 +36,9 @@ public class Application extends android.app.Application {
 		//刷新Html版本
 		VersionManager.getInstrance().refshHtmlVersion(); 
 		
+		}catch(Exception ex) {
+			Log.e("应用启动异常", ex.getLocalizedMessage());
+		}
 		//链接蓝牙
 		//initBlueToothService(); 
     }
