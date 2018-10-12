@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class OrderListModel {
 
-	    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 

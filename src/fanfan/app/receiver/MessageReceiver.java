@@ -15,6 +15,7 @@ import fanfan.app.constant.SPConstant;
 import fanfan.app.manager.MediaManager;
 import fanfan.app.manager.PrintManager;
 import fanfan.app.model.OrderPrintModel;
+import fanfan.app.model.menum.MediaType;
 import fanfan.app.util.SPUtils;
 import fanfan.app.util.StringUtils;
 import fanfan.app.view.webview.JavaScriptImpl;
@@ -24,7 +25,6 @@ public class MessageReceiver extends XGPushBaseReceiver {
 	@Override
 	public void onDeleteTagResult(Context arg0, int arg1, String arg2) {
 		// TODO Auto-generated method stub
-		 
 	}
 
 	@Override
@@ -68,9 +68,9 @@ public class MessageReceiver extends XGPushBaseReceiver {
 			switch(params.get("msgType").toString()) {
 				case "payOrder" :
 					//播放新订单语言
-					MediaManager.getInstrance().playNewOrder();
+					MediaManager.getInstrance().playMedia(MediaType.newOrderMedia);
 					//是否自动打印
-					if("true".equals(SPUtils.getInstance().getString(SPConstant.autoPrint,"true"))){
+					if("true".equals(SPUtils.getInstance().getString(SPConstant.autoPrint,"false"))){
 						try {
 						OrderPrintModel printModel = JSONObject.parseObject(params.get("data").toString(), OrderPrintModel.class);
 						

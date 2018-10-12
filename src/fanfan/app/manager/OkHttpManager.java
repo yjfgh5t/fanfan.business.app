@@ -36,11 +36,8 @@ public class OkHttpManager {
 
 		instance = new OkHttpManager(); 
 
-		okHttpClient = new OkHttpClient();
-
-		// 设置连接时间
-		okHttpClient.newBuilder().connectTimeout(10, TimeUnit.SECONDS).readTimeout(180, TimeUnit.SECONDS)
-				.writeTimeout(180, TimeUnit.SECONDS);
+		okHttpClient = new OkHttpClient().newBuilder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(180, TimeUnit.SECONDS)
+				.writeTimeout(180, TimeUnit.SECONDS).build();
 
 		return instance;
 	}
@@ -61,14 +58,9 @@ public class OkHttpManager {
 	 * @param url
 	 * @return
 	 */
-	public <T> void get(String url, Map<String, Object> params, Response<T> response) {
-
-		Request request = buildRequest(url, "GET", params);
-		if(request==null) {
-			response.onFailure(null, new IOException("无法连接网络"));
-			return;
-		}
-		okHttpClient.newCall(request).enqueue(response);
+	public <T> void get(final String url,final Map<String, Object>  params,final Response<T> response) {
+			Request request = buildRequest(url, "GET", params);
+			doCall(request,response);
 	}
 
 	/**
@@ -87,15 +79,19 @@ public class OkHttpManager {
 	 * @param url
 	 * @return
 	 */
-	public <T> void post(String url, Map<String, Object> params, Response<T> response) {
+	public <T> void post(final String url,final Map<String, Object> params,final Response<T> response) {
 		Request request = buildRequest(url, "POST", params);
+		doCall(request,response);
+	}
+
+	private <T> void doCall(final Request request,final Response<T> response) {
 		if(request==null) {
 			response.onFailure(null, new IOException("无法连接网络"));
 			return;
 		}
 		okHttpClient.newCall(request).enqueue(response);
 	}
-
+	
 	/**
 	 * 构建Reques对象
 	 * 

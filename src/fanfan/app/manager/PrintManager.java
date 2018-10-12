@@ -20,7 +20,8 @@ import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.model.OrderDetailPrintModel;
 import fanfan.app.model.OrderPrintModel;
-import fanfan.app.model.Response; 
+import fanfan.app.model.Response;
+import fanfan.app.model.menum.MediaType;
 import fanfan.app.util.BlueToothUtils;
 import fanfan.app.util.BlueUtils;
 import fanfan.app.util.BluetoothConnector.BluetoothSocketWrapper;
@@ -51,8 +52,15 @@ public class PrintManager {
 	/**
 	 * 打印订单
 	 */
-	public void printOrder(final OrderPrintModel printModel) {
-		blueToothPrint(printModel);
+	public boolean printOrder(final OrderPrintModel printModel) {
+		//蓝牙打印
+		boolean printState = blueToothPrint(printModel);
+		
+		if(!printState) {
+			MediaManager.getInstrance().playMedia(MediaType.printFailByBlueMedia);
+		}
+		
+		return printState;
 	}
 
 	
@@ -63,9 +71,11 @@ public class PrintManager {
 	 */
 	@SuppressLint("NewApi")
 	public boolean blueToothPrint(OrderPrintModel printModel) {
-		BluetoothDevice device = BlueToothUtils.getInstance().getCurrentDevice();
 		try {
-			PrintUtils.selectCommand(PrintUtils.RESET);
+			//打印失败
+			if(!PrintUtils.selectCommand(PrintUtils.RESET)) {
+				return false;
+			}
 			PrintUtils.selectCommand(PrintUtils.LINE_SPACING_DEFAULT);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_CENTER);
 			PrintUtils.printText(SPUtils.getInstance().getString(SPConstant.shopName,"饭饭点餐") +"\n\n"); 
@@ -88,8 +98,7 @@ public class PrintManager {
 					PrintUtils.printText(PrintUtils.printThreeData(detail.getOutTitle(), detail.getOutSize()+"",detail.getOutPrice().toString()+"\n"));
 				}
 			}
-			//PrintUtils.printText(PrintUtils.printThreeData("牛肉面啊啊啊牛肉面啊啊啊", "888", "98886.00\n"));
-
+			
 			PrintUtils.printText("--------------------------------\n");
 			PrintUtils.printText(PrintUtils.printTwoData("合计",printModel.getOrderTotal()+"\n"));
 			PrintUtils.printText("--------------------------------\n");
@@ -99,8 +108,6 @@ public class PrintManager {
 			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
 			PrintUtils.printText("备注："+printModel.getOrderRemark());
 			PrintUtils.printText("\n\n\n\n\n");
-			//socket.getOutputStream().close();
-			//socket.close();
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -108,7 +115,6 @@ public class PrintManager {
 		}
 		
 		return false;
-		
 	}
 	
 }

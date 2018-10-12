@@ -16,9 +16,14 @@ public class SPConstant {
 	public static final String htmlVersion ="sp_html_version";
 	
 	/**
-	 * html当前安装自带版本
+	 * html当前安装包自带版本
 	 */
 	public static final String htmlInstallVersion="1.0.2";
+	
+	/**
+	 * 下载apk安装包版本
+	 */
+	public static final String downLoadAPKVersion="sp_download_apk_version";
 	
 	/**
 	 * 前台通知标题

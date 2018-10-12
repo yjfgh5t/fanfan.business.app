@@ -48,19 +48,21 @@ public class PrintUtils {
      *
      * @param text 要打印的文字
      */
-    public static void printText(String text) {
+    public static boolean printText(String text) {
         try {
             byte[] data = text.getBytes("gbk");
             if(outputStream!=null) {
 	            outputStream.write(data, 0, data.length);
 	            outputStream.flush();
+	            return true;
             }else {
-            	BlueUtils.getInstance().write(data);
+            	return BlueUtils.getInstance().write(data);
             }
         } catch (IOException e) {
             //Toast.makeText(this.context, "发送失败！", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -68,18 +70,21 @@ public class PrintUtils {
      *
      * @param command 格式指令
      */
-    public static void selectCommand(byte[] command) {
+    public static boolean selectCommand(byte[] command) {
         try {
         	if(outputStream!=null) {
 	            outputStream.write(command);
 	            outputStream.flush();
+	            return true;
         	}else {
-        		BlueUtils.getInstance().write(command);
+        		return BlueUtils.getInstance().write(command);
         	}
         } catch (IOException e) {
             //Toast.makeText(this.context, "发送失败！", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+        
+        return false;
     }
 
     /**

@@ -1,10 +1,9 @@
 package fanfan.app.model;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,9 +30,6 @@ public abstract class Response<T> implements Callback{
 		if(httpResponse.isSuccessful()&& httpResponse.code()==200) { 
 			 
 			try {
-				//获取泛型类型
-				ParameterizedType parameterizedType  = (ParameterizedType)getClass().getGenericSuperclass();
-				
 				if(httpResponse.request()!=null && httpResponse.request().header("is-file")!=null) {
 					//下载文件 
 					DownLoadModel fileModel = new DownLoadModel();
@@ -45,8 +41,8 @@ public abstract class Response<T> implements Callback{
 					String responseBody = httpResponse.body().string();
 					//转换
 					if(responseBody.indexOf("{")==0) {
-						response =  JSONObject.parseObject(responseBody, APIResponse.class);
-					}else {
+						response =  JSONObject.parseObject(responseBody,APIResponse.class);
+					} else {
 						throw new IOException("请求服务出错");
 					}
 				}

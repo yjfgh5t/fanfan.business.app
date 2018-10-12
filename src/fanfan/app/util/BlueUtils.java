@@ -271,6 +271,12 @@ public class BlueUtils {
 	}
 	 
 	public boolean write(byte[] data) {
+		
+		//蓝牙未连接
+		if(!hasConnect) {
+			return false;
+		}
+		
 		//return startWrite(data);
 		boolean writeState=false;
 		if(data.length>20) {
@@ -289,7 +295,7 @@ public class BlueUtils {
 			 startWrite(writeData);
 			}
 		}else {
-			startWrite(data);
+			writeState = startWrite(data);
 		}
 		return writeState;
 	}

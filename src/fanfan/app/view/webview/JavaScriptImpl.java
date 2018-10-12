@@ -11,6 +11,9 @@ import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
@@ -23,6 +26,7 @@ import fanfan.app.manager.PrintManager;
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.OrderPrintModel;
 import fanfan.app.model.Response;
+import fanfan.app.util.FileUtils;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.util.SPUtils;
 import fanfan.app.util.Utils;
@@ -201,8 +205,8 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		new Handler().post(new Runnable() {
 			public void run() {
 				OrderPrintModel printModel = JSONObject.parseObject(orderJsonString, OrderPrintModel.class);
-				PrintManager.getInstrance().printOrder(printModel);
-				webViewCallBack("true", callBackKey);
+				boolean success = PrintManager.getInstrance().printOrder(printModel);
+				webViewCallBack(success?"true":"false", callBackKey);
 			}
 		});
 	}
@@ -300,6 +304,39 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		System.exit(0);
 	}
 	
+
+	@SuppressLint("NewApi")
+	@Override
+	@JavascriptInterface
+	public void checkOrInstallAPK(int checkOrInstall, String callBackKey) {
+		// TODO Auto-generated method stub
+		//检测是否有新apk安装
+		if(checkOrInstall==1) {
+			if(FileUtils.isFile(SPConstant.sdCardWWWPath+"/fanfan.apk")) {
+				boolean hasInstall=false;
+				//当前安装apk和服务apk版本是否一致
+				try {
+					PackageInfo packageInfo = webViewActivity.getPackageManager().getPackageInfo(webViewActivity.getPackageName(), 0);
+					if(packageInfo!=null) {
+						hasInstall = !packageInfo.versionName.equals(SPUtils.getInstance().getString(SPConstant.downLoadAPKVersion));
+					}
+				} catch (NameNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				webViewCallBack(hasInstall?"true":"false",callBackKey);
+			}
+		} else {
+			//安装apk
+			Intent intent = new Intent();
+		    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		    intent.setAction(Intent.ACTION_VIEW);
+		    intent.setDataAndType(Uri.parse("file://"+SPConstant.sdCardWWWPath+"/fanfan.apk"),"application/vnd.android.package-archive");
+		    webViewCallBack("true",callBackKey);
+		    webViewActivity.startActivity(intent);
+		}
+	}
+	
 	
 	/**
 	 * 加载信鸽
@@ -319,5 +356,6 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	           }
 		});
 	}
+
 
 }

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fanfan.business.app"
-    android:versionCode="1"
-    android:versionName="1.0" >
-
+    android:versionCode="2"
+    android:versionName="1.2">
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="21" />
@@ -118,8 +117,7 @@
         
         <service android:name="fanfan.app.service.ForegroundService"
             	 android:exported="true"
-            	 android:enabled="true"
-            ></service>
+            	 android:enabled="true"></service>
 
         <service
         android:name="com.inuker.bluetooth.library.BluetoothService" />
@@ -143,11 +141,11 @@
             android:exported="true" >
         </provider>
 
-        <!-- 【必须】 请将YOUR_ACCESS_ID修改为APP的AccessId，“21”开头的10位数字，中间没空格 2100294106 -->
+        <!-- 【必须】 请将YOUR_ACCESS_ID修改为APP的AccessId，“21”开头的10位数字，中间没空格2100294106  -->
         <meta-data
             android:name="XG_V2_ACCESS_ID"
             android:value="2100311367" />
-        <!-- 【必须】 请将YOUR_ACCESS_KEY修改为APP的AccessKey，“A”开头的12位字符串，中间没空格 A4V73CJGS57A-->
+        <!-- 【必须】 请将YOUR_ACCESS_KEY修改为APP的AccessKey，“A”开头的12位字符串，中间没空格A4V73CJGS57A -->
         <meta-data
             android:name="XG_V2_ACCESS_KEY"
             android:value="AA29W5C2B3JK" />

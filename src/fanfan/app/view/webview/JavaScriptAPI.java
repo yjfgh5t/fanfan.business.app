@@ -83,6 +83,13 @@ public interface JavaScriptAPI {
 	void print(final String orderJsonString,String callBackKey);
 	
 	/**
+	 * 检查或者安装APK
+	 * @param checkOrInstall
+	 * @param callBackKey
+	 */
+	void checkOrInstallAPK(final int checkOrInstall,String callBackKey);
+	
+	/**
 	 * 退出app
 	 */
 	void exitApp();
