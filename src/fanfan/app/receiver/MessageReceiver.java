@@ -1,7 +1,9 @@
 package fanfan.app.receiver;
 
+import java.util.Date;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tencent.android.tpush.XGPushBaseReceiver;
 import com.tencent.android.tpush.XGPushClickedResult;
@@ -21,7 +23,7 @@ import fanfan.app.util.StringUtils;
 import fanfan.app.view.webview.JavaScriptImpl;
 
 public class MessageReceiver extends XGPushBaseReceiver {
-
+	
 	@Override
 	public void onDeleteTagResult(Context arg0, int arg1, String arg2) {
 		// TODO Auto-generated method stub
@@ -69,12 +71,11 @@ public class MessageReceiver extends XGPushBaseReceiver {
 				case "payOrder" :
 					//播放新订单语言
 					MediaManager.getInstrance().playMedia(MediaType.newOrderMedia);
-					//是否自动打印
+					//是否自动打印   
 					if("true".equals(SPUtils.getInstance().getString(SPConstant.autoPrint,"false"))){
 						try {
-						OrderPrintModel printModel = JSONObject.parseObject(params.get("data").toString(), OrderPrintModel.class);
-						
-						PrintManager.getInstrance().printOrder(printModel);
+							OrderPrintModel printModel =JSON.parseObject(params.get("data").toString(),OrderPrintModel.class);
+							PrintManager.getInstrance().printOrder(printModel);
 						}catch(Exception ex) {
 							System.out.println(ex);
 						}

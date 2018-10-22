@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 
 public class OrderPrintModel {
+	
 
 	/**
 	 * 订单号
@@ -41,7 +43,7 @@ public class OrderPrintModel {
 	 /**
 	  * 下单时间
 	  */
-	 private Date orderTime;
+	 private String orderTime;
 	 
 	 /**
 	  * 商品数量
@@ -101,11 +103,11 @@ public class OrderPrintModel {
 		this.orderRemark = orderRemark;
 	}
 
-	public Date getOrderTime() {
+	public String getOrderTime() {
 		return orderTime;
 	}
 
-	public void setOrderTime(Date orderTime) {
+	public void setOrderTime(String orderTime) {
 		this.orderTime = orderTime;
 	}
 

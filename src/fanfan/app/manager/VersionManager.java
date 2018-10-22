@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 
-import android.util.Log;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
@@ -36,7 +35,6 @@ public class VersionManager {
 	public static VersionManager getInstrance() {
 		if (instance == null) {
 			instance = new VersionManager();
-			
 			//创建文件夹 
 			FileUtils.createOrExistsDir(SPConstant.sdCardWWWPath);  
 			FileUtils.createOrExistsDir(SPConstant.sdCardPath+"/temp/www");
@@ -87,7 +85,7 @@ public class VersionManager {
 				@Override
 				public void callBack(APIResponse<JSONObject> response) {
 					//当前版本和线上版本不匹配
-					if(response.isSuccess()) {
+					if(response.isSuccess() && response.getCode()==0) {
 						VersionModel version = response.getData().toJavaObject(VersionModel.class);
 						//或者有新版本是 下载文件
 						if(version!=null && !version.getHtmlVersion().equals(getCurrentHtmlVersion())) {

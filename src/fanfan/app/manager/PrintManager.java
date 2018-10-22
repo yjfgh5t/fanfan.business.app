@@ -85,7 +85,7 @@ public class PrintManager {
 			PrintUtils.selectCommand(PrintUtils.NORMAL);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
 			PrintUtils.printText(PrintUtils.printTwoData("订单编号",printModel.getOrderNum()+"\n"));
-			PrintUtils.printText(PrintUtils.printTwoData("下单时间",formatTimestamp.format(printModel.getOrderTime())+"\n"));
+			PrintUtils.printText(PrintUtils.printTwoData("下单时间",printModel.getOrderTime()+"\n"));
 
 			PrintUtils.printText("--------------------------------\n");
 			PrintUtils.selectCommand(PrintUtils.BOLD);
@@ -95,7 +95,7 @@ public class PrintManager {
 			List<OrderDetailPrintModel> listDetails =  printModel.getDetails();
 			if(listDetails!=null) {
 				for(OrderDetailPrintModel detail : listDetails) {
-					PrintUtils.printText(PrintUtils.printThreeData(detail.getOutTitle(), detail.getOutSize()+"",detail.getOutPrice().toString()+"\n"));
+					PrintUtils.printText(PrintUtils.printThreeData(detail.getOutTitle(), detail.getOutSize()+"",detail.getOutPrice()+"\n"));
 				}
 			}
 			

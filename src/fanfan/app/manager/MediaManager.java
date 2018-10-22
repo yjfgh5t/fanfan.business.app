@@ -29,7 +29,7 @@ public class MediaManager {
 	/**
 	 * 新订单mp3地址
 	 */
-	private static String newOrderMediaPath = SPConstant.sdCardWWWPath+"/static/media/new-order.mp3";
+	private static String newOrderMediaPath = SPConstant.sdCardWWWPath+"/static/media/new_order.mp3";
 	
 	/**
 	 * 蓝牙打印失败

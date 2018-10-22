@@ -12,11 +12,11 @@ public class OrderDetailPrintModel {
 			this.outTitle = outTitle;
 		}
 
-		public BigDecimal getOutPrice() {
+		public float getOutPrice() {
 			return outPrice;
 		}
 
-		public void setOutPrice(BigDecimal outPrice) {
+		public void setOutPrice(float outPrice) {
 			this.outPrice = outPrice;
 		}
 
@@ -38,7 +38,7 @@ public class OrderDetailPrintModel {
 
 			private String outTitle;
 
-		    private BigDecimal outPrice;
+		    private float outPrice;
 
 		    //商品数量
 		    private Integer outSize;
