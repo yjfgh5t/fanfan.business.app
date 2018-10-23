@@ -17,7 +17,7 @@ public abstract class Response<T> implements Callback{
 		
 		APIResponse response = new APIResponse<T>();
 		response.setCode(-1);
-		response.setMsg(e.getMessage());
+		response.setMsg("无法连接服务器，请检查您的网咯");
 		response.setSuccess(false);
 		callBack(response);
 	}

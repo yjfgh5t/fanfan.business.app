@@ -168,5 +168,8 @@ public class WebViewActivity extends Activity {
 		javaScriptAPI = new JavaScriptImpl(webView, this);
 
 		webView.addJavascriptInterface(javaScriptAPI, "android");
+		
+		//绑定信鸽
+		javaScriptAPI.bindXG("");
 	}
 }

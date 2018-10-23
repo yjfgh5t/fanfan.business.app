@@ -29,6 +29,7 @@ import fanfan.app.model.Response;
 import fanfan.app.util.FileUtils;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.util.SPUtils;
+import fanfan.app.util.StringUtils;
 import fanfan.app.util.Utils;
 import fanfan.app.view.ScanActivity;
 import fanfan.app.view.WebViewActivity;
@@ -42,6 +43,8 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	private String choiseCallbackKey,sacnQRCodeCallbackKey,loadingKey="loading";
 	
 	private static JavaScriptImpl instrance;
+	
+	private boolean hasBindXG = false;
 	
 	/**
 	 * 获取当前实例
@@ -286,13 +289,13 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	public void bindUser(String customerId, String callBackKey) {
 		SPUtils.getInstance().put(SPConstant.customerId,Integer.parseInt(customerId));
 		// TODO Auto-generated method stub
-		initXG(customerId,callBackKey);
+		bindXG(callBackKey);
 	}
 	
 	@Override
 	@JavascriptInterface
 	public void loginOut(String userId,String callBackKey) {
-		XGPushManager.delAccount(Utils.getApp(),"*");
+		//XGPushManager.delAccount(Utils.getApp(),"*");
 		webViewCallBack("", callBackKey);
 	}
 	
@@ -341,20 +344,34 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	/**
 	 * 加载信鸽
 	 */
-	private void initXG(String customerId,final String callBackKey) {
+	@SuppressLint("NewApi")
+	@Override
+	public void bindXG(final String callBackKey) {
 		// 注册接口
-        XGPushConfig.enableDebug(Utils.getApp(),true);
-    	XGPushManager.bindAccount(Utils.getApp(), customerId,new XGIOperateCallback() {
-	        	@Override
-	          public void onSuccess(Object data, int flag) {
-	           //token在设备卸载重装的时候有可能会变
-	        		webViewCallBack("绑定成功",callBackKey);
-	           }
-	           @Override
-	           public void onFail(Object data, int errCode, String msg) {
-	        	   webViewCallBack("绑定失败"+msg,callBackKey);
-	           }
-		});
+        //XGPushConfig.enableDebug(Utils.getApp(),true);
+		int customerId =SPUtils.getInstance().getInt(SPConstant.customerId,0);
+		if(customerId!=0 && !hasBindXG) {
+			//防止重复绑定
+			hasBindXG = true;
+			
+	    	XGPushManager.bindAccount(Utils.getApp(), customerId+"",new XGIOperateCallback() {
+		        	@Override
+		          public void onSuccess(Object data, int flag) {
+		        		hasBindXG = true;
+		        		//token在设备卸载重装的时候有可能会变
+		        		if(!StringUtils.isEmpty(callBackKey)) {
+		        			webViewCallBack("绑定成功",callBackKey);
+		        		}
+		           }
+		           @Override
+		           public void onFail(Object data, int errCode, String msg) {
+		        	   hasBindXG = false;
+		        	   if(!StringUtils.isEmpty(callBackKey)) {
+		        		   webViewCallBack("绑定失败"+msg,callBackKey);
+		        	   }
+		           }
+			});
+		}
 	}
 
 

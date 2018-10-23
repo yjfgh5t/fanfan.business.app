@@ -9,6 +9,10 @@ public class SPConstant {
 	 */
 	public static final String customerId ="sp_customer_id";
 	
+	/**
+	 * 用户信息
+	 */
+	public static final String userInfo = "sp_user_info";
 	 
 	/**
 	 * html版本

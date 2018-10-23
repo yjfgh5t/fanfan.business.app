@@ -113,4 +113,10 @@ public interface JavaScriptAPI {
 	 * @param callBackKey
 	 */
 	void loginOut(String userId,String callBackKey);
+	
+	/**
+	 * 绑定信鸽
+	 * @param callBackKey
+	 */
+	void bindXG(final String callBackKey);
 }

@@ -21,7 +21,7 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
     private ZXingView mZXingView;
 
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
         if (getSupportActionBar() != null){
         	   getSupportActionBar().hide();
