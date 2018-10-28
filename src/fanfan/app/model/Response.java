@@ -17,7 +17,7 @@ public abstract class Response<T> implements Callback{
 		
 		APIResponse response = new APIResponse<T>();
 		response.setCode(-1);
-		response.setMsg("无法连接服务器，请检查您的网咯");
+		response.setMsg("401.链接失败,请检查您的网络！");
 		response.setSuccess(false);
 		callBack(response);
 	}
@@ -43,7 +43,7 @@ public abstract class Response<T> implements Callback{
 					if(responseBody.indexOf("{")==0) {
 						response =  JSONObject.parseObject(responseBody,APIResponse.class);
 					} else {
-						throw new IOException("请求服务出错");
+						throw new IOException("402.链接失败,请检查您的网络！");
 					}
 				}
 				response.setSuccess(true); 
@@ -53,11 +53,10 @@ public abstract class Response<T> implements Callback{
 				response.setCode(-1); 
 				e.printStackTrace();
 			}
-			
 		}else { 
 			response.setCode(-1);
 			response.setSuccess(false);
-			response.setMsg("请求服务出错");
+			response.setMsg("403。链接失败,请检查您的网络！");
 		}
 		
 		//回调

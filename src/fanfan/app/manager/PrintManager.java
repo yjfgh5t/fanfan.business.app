@@ -22,7 +22,6 @@ import fanfan.app.model.OrderDetailPrintModel;
 import fanfan.app.model.OrderPrintModel;
 import fanfan.app.model.Response;
 import fanfan.app.model.menum.MediaType;
-import fanfan.app.util.BlueToothUtils;
 import fanfan.app.util.BlueUtils;
 import fanfan.app.util.BluetoothConnector.BluetoothSocketWrapper;
 import fanfan.app.util.PrintUtils;

@@ -46,6 +46,8 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	
 	private boolean hasBindXG = false;
 	
+	private Response<Object> blueResponse;
+	
 	/**
 	 * 获取当前实例
 	 * @return
@@ -58,6 +60,15 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		this.webView = webView;
 		this.webViewActivity = webViewActivity;
 		instrance = this;
+		
+		//初始化蓝牙操作的默认返回
+		blueResponse = new Response<Object>() {
+			@Override
+			public void callBack(APIResponse<Object> response) {
+				// TODO Auto-generated method stub
+				webViewCallBack(JSON.toJSONString(response), CodeConstant.Notify_Blue_ToothKey);
+			}
+		};
 	}
 	
 	//get提交
@@ -136,21 +147,14 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	 */
 	@Override
 	@JavascriptInterface
-	public void blueTooth(final boolean start,final String callBackKey) {
+	public void blueTooth(final String event,final String callBackKey) {
 		// TODO Auto-generated method stub
 		new Handler().post(new Runnable() {
 			public void run() {
-				if(start) {
-					BlueToothManager.getInstrance().startScaneBlue(webViewActivity, new Response<Object>() {
-						
-						@Override
-						public void callBack(APIResponse<Object> response) {
-							// TODO Auto-generated method stub
-							webViewCallBack(JSON.toJSONString(response), callBackKey);
-						}
-					});
-				}else {
-					BlueToothManager.getInstrance().stopScaneBlue();
+				switch(event) {
+				case "start": BlueToothManager.getInstrance().startScaneBlue(webViewActivity,blueResponse); break;
+				case "stop": BlueToothManager.getInstrance().stopScaneBlue(); break;
+				case "state": BlueToothManager.getInstrance().connectState(); break;
 				}
 			}
 		});
@@ -165,15 +169,7 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		// TODO Auto-generated method stub
 				new Handler().post(new Runnable() {
 					public void run() {
-						BlueToothManager.getInstrance().connectBlue(address, new Response<Object>() {
-							@Override
-							public void callBack(APIResponse<Object> response) {
-								// TODO Auto-generated method stub
-								// TODO Auto-generated method stub
-								webViewCallBack(JSON.toJSONString(response), callBackKey);
-							}
-							
-						});
+						BlueToothManager.getInstrance().connectBlue(address,blueResponse);
 					}
 				});
 	}

@@ -18,6 +18,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
@@ -30,6 +31,7 @@ import android.os.ParcelUuid;
 import android.util.Log;
 import android.widget.Toast;
 import fanfan.app.constant.SPConstant;
+import fanfan.app.manager.BlueToothManager;
 
 @SuppressLint("NewApi")
 public class BlueUtils {
@@ -138,6 +140,7 @@ public class BlueUtils {
 				        case BluetoothAdapter.STATE_OFF:
 				            Log.d("aaa", "STATE_OFF 手机蓝牙关闭");
 				            closeToothGatt(toothGatt);
+				            utilListener.onDisConnected(null);
 				            break;
 				        case BluetoothAdapter.STATE_TURNING_OFF:
 				            Log.d("aaa", "STATE_TURNING_OFF 手机蓝牙正在关闭");
@@ -181,15 +184,15 @@ public class BlueUtils {
 						if(hasConnect) {
 							//设置链接失败
 							hasConnect=false;
-							//异步获取链接状态
-							gatt.connect(); 
+							//关闭链接
+							closeToothGatt(gatt);
+							//重新链接
+							if(mCurDevice!=null) {
+								connect(mCurDevice.getAddress());
+							}
 						}else { 
 							utilListener.onDisConnected(mCurDevice);
 							closeToothGatt(gatt);
-							if(autoConnectCount<3 && mCurDevice!=null) {
-								autoConnectCount++;
-								connect(mCurDevice.getAddress());
-							}
 						}
 						break;
 					//蓝牙链接中
@@ -391,6 +394,17 @@ public class BlueUtils {
 	}
 
 	/**
+	 * 链接状态
+	 */
+	public void connectState() {
+		if(mCurDevice!=null && toothGatt!=null && hasConnect) {
+			utilListener.onConnected(mCurDevice);
+		}else {
+			utilListener.onDisConnected(null);
+		}
+	}
+	
+	/**
 	 * 链接蓝牙设备
 	 * @param address
 	 */
@@ -411,11 +425,9 @@ public class BlueUtils {
 			return;
 		}
 		
-		if(toothGatt!=null) {
-			toothGatt.disconnect();
-			toothGatt.close();
-			toothGatt=null;
-		}
+		//关闭Gatt
+		closeToothGatt(toothGatt);
+		
 		try {
 		//判断是否是6.0版本以上
 		if(Build.VERSION.SDK_INT>22) {

@@ -47,7 +47,7 @@ public interface JavaScriptAPI {
 	 * @param start 开启、停止
 	 * @param callBackKey
 	 */
-	void blueTooth(boolean start,final String callBackKey);
+	void blueTooth(final String event,final String callBackKey);
 	
 	/**
 	 * 链接蓝牙操作
