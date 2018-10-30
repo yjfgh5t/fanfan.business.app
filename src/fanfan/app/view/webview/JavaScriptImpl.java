@@ -367,6 +367,10 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		        	   }
 		           }
 			});
+		}else {
+			if(!StringUtils.isEmpty(callBackKey)) {
+				webViewCallBack("绑定成功",callBackKey);
+			}
 		}
 	}
 
