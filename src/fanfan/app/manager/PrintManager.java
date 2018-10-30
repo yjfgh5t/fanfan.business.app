@@ -77,15 +77,14 @@ public class PrintManager {
 			}
 			PrintUtils.selectCommand(PrintUtils.LINE_SPACING_DEFAULT);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_CENTER);
+			PrintUtils.selectCommand(PrintUtils.BOLD);
 			PrintUtils.printText(SPUtils.getInstance().getString(SPConstant.shopName,"饭饭点餐") +"\n\n"); 
+			PrintUtils.printText(PrintUtils.printTwoData("排队号：#"+printModel.getOrderDateNum(), "桌号："+printModel.getOrderDeskNum())+"\n\n");
 			PrintUtils.selectCommand(PrintUtils.DOUBLE_HEIGHT_WIDTH);
-			PrintUtils.printText("#"+printModel.getOrderDateNum()+"\n");
-			PrintUtils.printText("桌号："+printModel.getOrderDeskNum()+"\n\n");
+			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
+			PrintUtils.printText("备注："+printModel.getOrderRemark()+" 【"+printModel.getOrderTypeText()+"】"+"\n");
 			PrintUtils.selectCommand(PrintUtils.NORMAL);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
-			PrintUtils.printText(PrintUtils.printTwoData("订单编号",printModel.getOrderNum()+"\n"));
-			PrintUtils.printText(PrintUtils.printTwoData("下单时间",printModel.getOrderTime()+"\n"));
-
 			PrintUtils.printText("--------------------------------\n");
 			PrintUtils.selectCommand(PrintUtils.BOLD);
 			PrintUtils.printText(PrintUtils.printThreeData("菜品", "数量", "金额\n"));
@@ -94,18 +93,18 @@ public class PrintManager {
 			List<OrderDetailPrintModel> listDetails =  printModel.getDetails();
 			if(listDetails!=null) {
 				for(OrderDetailPrintModel detail : listDetails) {
-					PrintUtils.printText(PrintUtils.printThreeData(detail.getOutTitle(), detail.getOutSize()+"",detail.getOutPrice()+"\n"));
+					// outType=6时未餐盒 不需要打印数量
+					String outSize = detail.getOutType().equals(6)?"":detail.getOutSize()+"";
+					PrintUtils.printText(PrintUtils.printThreeData(detail.getOutTitle(), outSize,detail.getOutPrice()+"\n"));
 				}
 			}
-			
 			PrintUtils.printText("--------------------------------\n");
 			PrintUtils.printText(PrintUtils.printTwoData("合计",printModel.getOrderTotal()+"\n"));
 			PrintUtils.printText("--------------------------------\n");
 			PrintUtils.printText(PrintUtils.printTwoData("支付", printModel.getOrderPay()+"\n"));
 			PrintUtils.printText("--------------------------------\n");
-
-			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
-			PrintUtils.printText("备注："+printModel.getOrderRemark());
+			PrintUtils.printText(PrintUtils.printTwoData("订单编号",printModel.getOrderNum()+"\n"));
+			PrintUtils.printText(PrintUtils.printTwoData("下单时间",printModel.getOrderTime()+"\n"));
 			PrintUtils.printText("\n\n\n\n\n");
 			return true;
 		} catch (Exception e) {

@@ -51,6 +51,19 @@ public class OrderPrintModel {
 	 private Integer commoditySize;
 	 
 	 /**
+	  * 打包/膛吃
+	  */
+	 private String orderTypeText;
+	 
+	 public String getOrderTypeText() {
+		return orderTypeText;
+	}
+
+	public void setOrderTypeText(String orderTypeText) {
+		this.orderTypeText = orderTypeText;
+	}
+
+	/**
 	  * 订单详情
 	  */
 	 private List<OrderDetailPrintModel> details;
