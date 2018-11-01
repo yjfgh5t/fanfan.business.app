@@ -27,12 +27,14 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import fanfan.app.constant.CodeConstant;
+import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.MediaManager;
 import fanfan.app.manager.PrintManager;
 import fanfan.app.manager.VersionManager;
 import fanfan.app.util.BlueUtils;
 import fanfan.app.util.PhotoUtil;
+import fanfan.app.util.SPUtils;
 import fanfan.app.util.ZipUtils;
 import fanfan.app.view.webview.JavaScriptAPI;
 import fanfan.app.view.webview.JavaScriptImpl;
@@ -171,5 +173,8 @@ public class WebViewActivity extends Activity {
 		
 		//绑定信鸽
 		javaScriptAPI.bindXG("");
+		
+		//设置http地址 给h5使用
+		SPUtils.getInstance().put(SPConstant.httpPath, UrlConstant.domain);
 	}
 }

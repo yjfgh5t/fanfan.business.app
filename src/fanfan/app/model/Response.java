@@ -26,9 +26,11 @@ public abstract class Response<T> implements Callback{
 	public void onResponse(Call call, okhttp3.Response httpResponse){
 
 		APIResponse response =  new APIResponse<T>();
+		response.setCode(-1);
+		response.setSuccess(false);
+		response.setMsg("403。链接失败,请检查您的网络！");
 		
 		if(httpResponse.isSuccessful()&& httpResponse.code()==200) { 
-			 
 			try {
 				if(httpResponse.request()!=null && httpResponse.request().header("is-file")!=null) {
 					//下载文件 
@@ -36,29 +38,24 @@ public abstract class Response<T> implements Callback{
 					fileModel.setContentLength(httpResponse.body().contentLength());
 					//fileModel.setFileName(httpResponse.request().url().);
 					fileModel.setInputStream(httpResponse.body().byteStream());
+					response.setCode(0);
+					response.setSuccess(true);
 					response.setData(fileModel);   
 				}else {
 					String responseBody = httpResponse.body().string();
 					//转换
 					if(responseBody.indexOf("{")==0) {
 						response =  JSONObject.parseObject(responseBody,APIResponse.class);
-					} else {
-						throw new IOException("402.链接失败,请检查您的网络！");
+						response.setSuccess(true); 
 					}
 				}
-				response.setSuccess(true); 
-			} catch (IOException e) {
+			} catch (Exception e) {
 				response.setMsg(e.getMessage());
 				response.setSuccess(false);
 				response.setCode(-1); 
 				e.printStackTrace();
 			}
-		}else { 
-			response.setCode(-1);
-			response.setSuccess(false);
-			response.setMsg("403。链接失败,请检查您的网络！");
 		}
-		
 		//回调
 		callBack(response);
 		

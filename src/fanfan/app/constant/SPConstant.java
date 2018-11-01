@@ -55,6 +55,11 @@ public class SPConstant {
 	public static final String blueToothConnect="sp_blue_tooth_connect";
 	
 	/**
+	 * domain地址
+	 */
+	public static final String httpPath = "sp_http_path";
+	
+	/**
 	 * SDCard路径
 	 */
 	public static final String sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/fanfan.business.app";
