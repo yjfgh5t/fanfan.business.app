@@ -148,7 +148,7 @@
             android:exported="true" >
         </provider>
 
-        <!-- 【必须】 请将YOUR_ACCESS_ID修改为APP的AccessId，“21”开头的10位数字，中间没空格2100294106  -->
+        <!-- 【必须】 请将YOUR_ACCESS_ID修改为APP的AccessId，“21”开头的10位数字，中间没空格2100311367  -->
         <meta-data
             android:name="XG_V2_ACCESS_ID"
             android:value="2100311367" />

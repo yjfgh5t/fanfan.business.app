@@ -4,7 +4,7 @@ public class CodeConstant {
 	/**
 	 * 开发环境
 	 */
-	public static final boolean Is_Dev=true;
+	public static final boolean Is_Dev=false;
 	
 	/**
 	 * 拍照

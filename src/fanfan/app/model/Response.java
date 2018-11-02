@@ -17,7 +17,7 @@ public abstract class Response<T> implements Callback{
 		
 		APIResponse response = new APIResponse<T>();
 		response.setCode(-1);
-		response.setMsg("401.链接失败,请检查您的网络！");
+		response.setMsg("401 链接失败,请检查您的网络！");
 		response.setSuccess(false);
 		callBack(response);
 	}
@@ -28,7 +28,7 @@ public abstract class Response<T> implements Callback{
 		APIResponse response =  new APIResponse<T>();
 		response.setCode(-1);
 		response.setSuccess(false);
-		response.setMsg("403。链接失败,请检查您的网络！");
+		response.setMsg("402 链接失败,请检查您的网络！");
 		
 		if(httpResponse.isSuccessful()&& httpResponse.code()==200) { 
 			try {
