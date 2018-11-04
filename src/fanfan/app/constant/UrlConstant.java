@@ -4,7 +4,7 @@ public class UrlConstant {
 
 	public static final String domain;
 	
-	public static final String test_domain="http://192.168.4.215:7061";
+	public static final String test_domain="http://192.168.1.10:7061";
 	
 	/**
 	 * 登录地址
@@ -28,7 +28,7 @@ public class UrlConstant {
 	
 	static{
 		if(CodeConstant.Is_Dev) {
-			domain="http://192.168.4.215:8081/api/";
+			domain="http://192.168.1.10:8081/api/";
 		}else {
 			domain="http://www.wxcard.com.cn/api/";
 		}
