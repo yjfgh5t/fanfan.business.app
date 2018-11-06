@@ -131,4 +131,11 @@ public interface JavaScriptAPI {
 	 * @param data
 	 */
 	void onActivityResult(int requestCode, int resultCode, Intent data,Activity activity);
+	
+	/**
+	 * 打开App
+	 * @param url
+	 * @param callBackKey
+	 */
+	void openApp(String url,String callBackKey);
 }

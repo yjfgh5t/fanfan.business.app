@@ -16,8 +16,10 @@ import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -387,6 +389,38 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			}
 		}
 	}
+	
+	/**
+	 * 打开App
+	 */
+	@SuppressLint("NewApi")
+	@Override
+	@JavascriptInterface
+	public void openApp(String url,String callBackKey) {
+		
+		if(StringUtils.isEmpty(url)) {
+			webViewCallBack("false",callBackKey);
+			return;
+		}
+		
+		Uri uri = Uri.parse(url);
+        String host = uri.getHost();
+        String scheme = uri.getScheme();
+        //host 和 scheme 都不能为null
+         if (!StringUtils.isEmpty(host) && !StringUtils.isEmpty(scheme)) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            if (isInstall(intent)) {
+            	webViewActivity.startActivity(intent);
+            	webViewCallBack("true",callBackKey);
+            }
+        }
+		
+	}
+	
+	  //判断app是否安装
+    private boolean isInstall(Intent intent) {
+        return Utils.getApp().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+    }
 
 	/**
 	 * 操作返回
