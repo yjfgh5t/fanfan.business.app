@@ -66,71 +66,7 @@ public class WebViewActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode != RESULT_OK) {
-			return;
-		}
-
-		switch (requestCode) {
-		case CodeConstant.Code_Choise_Img:
-			PhotoUtil.setPhotoData(data.getData());
-			// 执行截图
-			PhotoUtil.startCutImg(this);
-			break;
-		case CodeConstant.Code_Take_Photo:
-			// 执行截图
-			PhotoUtil.startCutImg(this);
-			break;
-		case CodeConstant.Code_Cut_Back:
-			// 获取图片
-			File imgFile = PhotoUtil.getFile(true);
-
-			InputStream input = null;
-			OutputStream compressStream = null;
-			// 压缩图片文件
-			try {
-				input = new FileInputStream(imgFile);
-
-				Bitmap bitmap = BitmapFactory.decodeStream(input);
-
-				int width = (int) (bitmap.getWidth() * 0.4);
-				int height = (int) (bitmap.getHeight() * 0.4);
-
-				// 压缩后的bitmap
-				bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-
-				File outputFile = new File(Environment.getExternalStorageDirectory(), "compress-img.jpg");
-
-				compressStream = new FileOutputStream(outputFile);
-				// 将bitmap源文输出
-				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, compressStream);
-				compressStream.flush();
-				// 压缩文件
-				javaScriptAPI.uploadFile(outputFile);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				try {
-					if (input != null) {
-						input.close();
-					}
-					if (compressStream != null) {
-						compressStream.close();
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-			break;
-		case CodeConstant.Code_San_QRCode:
-			if (data != null && data.hasExtra("result")) {
-				javaScriptAPI.resultScanQRCode(data.getStringExtra("result"));
-			}
-			break;
-		}
+		javaScriptAPI.onActivityResult(requestCode, resultCode, data, this);
 	}
 
 	/**

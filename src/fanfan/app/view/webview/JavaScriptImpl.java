@@ -1,6 +1,11 @@
 package fanfan.app.view.webview;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,10 +15,15 @@ import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
@@ -25,6 +35,7 @@ import fanfan.app.manager.OkHttpManager;
 import fanfan.app.manager.PrintManager;
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.OrderPrintModel;
+import fanfan.app.model.PictureOptionModel;
 import fanfan.app.model.Response;
 import fanfan.app.util.FileUtils;
 import fanfan.app.util.PhotoUtil;
@@ -47,6 +58,8 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	private boolean hasBindXG = false;
 	
 	private Response<Object> blueResponse;
+	
+	private PictureOptionModel optionModel;
 	
 	/**
 	 * 获取当前实例
@@ -235,12 +248,13 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	 */
 	@Override
 	@JavascriptInterface
-	public void choiceImg(final int takePhoto, final String callBackKey) {
+	public void choiceImg(final String pictureOption, final String callBackKey) {
+		optionModel = JSONObject.parseObject(pictureOption, PictureOptionModel.class);
 		choiseCallbackKey=callBackKey;
 		// TODO Auto-generated method stub
 				new Handler().post(new Runnable() {
 					public void run() {
-						switch(takePhoto) {
+						switch(optionModel.getOpenType()) {
 						case 1:
 							//拍照
 							PhotoUtil.takePhoto(webViewActivity);
@@ -374,5 +388,67 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		}
 	}
 
+	/**
+	 * 操作返回
+	 */
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data,Activity activity) {  
+		if (resultCode != webViewActivity.RESULT_OK) {
+			return;
+		}
+
+		switch (requestCode) {
+		case CodeConstant.Code_Choise_Img:
+			PhotoUtil.setPhotoData(data.getData());
+			
+			//是否给图片水印
+			if(optionModel.getHasWatermark()==1) {
+				PhotoUtil.wartermarkImg(optionModel.getWatermark());
+			}
+			
+			//执行截图
+			if(optionModel.getHasCutImage()==1) {
+				PhotoUtil.startCutImg(activity);
+			}else {
+				File imgFile = PhotoUtil.compressImg(false); 
+				// 压缩文件
+				if(imgFile!=null) {
+					this.uploadFile(imgFile); 
+				}
+			}
+			
+			break;
+		case CodeConstant.Code_Take_Photo:
+			//是否给图片水印
+			if(optionModel.getHasWatermark()==1) {
+				PhotoUtil.wartermarkImg(optionModel.getWatermark());
+			}
+			
+			//执行截图
+			if(optionModel.getHasCutImage()==1) {
+				PhotoUtil.startCutImg(activity);
+			}else {
+				File imgFile = PhotoUtil.compressImg(false); 
+				// 压缩文件
+				if(imgFile!=null) {
+					this.uploadFile(imgFile); 
+				}
+			}
+			break;
+		case CodeConstant.Code_Cut_Back: 
+				// 获取图片
+				File imgFile = PhotoUtil.compressImg(true); 
+				// 压缩文件
+				if(imgFile!=null) {
+					this.uploadFile(imgFile); 
+				}
+			break;
+		case CodeConstant.Code_San_QRCode:
+			if (data != null && data.hasExtra("result")) {
+				this.resultScanQRCode(data.getStringExtra("result"));
+			}
+			break;
+		}
+	}
 
 }

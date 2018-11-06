@@ -2,6 +2,9 @@ package fanfan.app.view.webview;
 
 import java.io.File;
 
+import android.app.Activity;
+import android.content.Intent;
+
 public interface JavaScriptAPI {
 	/**
 	 * 调用ajax方法
@@ -59,9 +62,10 @@ public interface JavaScriptAPI {
 	/**
 	 * 选择照片
 	 * @param takePhoto 1:拍照 2:打开相册
+	 * @param optionType 1:裁剪 2:水印 
 	 * @param callBackKey
 	 */
-	void choiceImg(final int takePhoto,String callBackKey);
+	void choiceImg(final String pictureOption,String callBackKey);
 	
 	/**
 	 * 扫码
@@ -119,4 +123,12 @@ public interface JavaScriptAPI {
 	 * @param callBackKey
 	 */
 	void bindXG(final String callBackKey);
+	
+	/**
+	 * Activity操作返回
+	 * @param requestCode
+	 * @param resultCode
+	 * @param data
+	 */
+	void onActivityResult(int requestCode, int resultCode, Intent data,Activity activity);
 }
