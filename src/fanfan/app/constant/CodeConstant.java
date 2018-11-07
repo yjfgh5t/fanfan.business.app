@@ -31,6 +31,9 @@ public class CodeConstant {
 	 */
 	public static final String Notify_Msg_CallKey = "notify_msg";
 	
+	/**
+	 * 蓝牙通知事件
+	 */
 	public static final String Notify_Blue_ToothKey ="local_notify_blue_booth_event";
 	
 }

@@ -114,7 +114,7 @@ public class PhotoUtil {
 	 */
 	public static void wartermarkImg(String gText){  
 		try {
-            float fontSize = 8 * 10;  
+            float fontSize = 10 * 10;  
             Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(mFileTemp));  
               
             //bitmap = scaleWithWH(bitmap, 300*scale, 300*scale);
@@ -134,6 +134,8 @@ public class PhotoUtil {
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);  
             // text color - #3D3D3D  
             paint.setColor(Color.argb(200, 255, 255, 255));    
+            paint.setFakeBoldText(true);
+            paint.setTextSkewX(-0.8f);
             paint.setTextSize(fontSize);              
              paint.setDither(true); //获取跟清晰的图像采样  
              paint.setFilterBitmap(true);//过滤一些  

@@ -30,19 +30,17 @@ public class MessageReceiver extends XGPushBaseReceiver {
 	}
 
 	@Override
-	public void onNotifactionClickedResult(Context arg0, XGPushClickedResult arg1) {
+	public void onNotifactionClickedResult(Context arg0, XGPushClickedResult result) {
 		// TODO Auto-generated method stub
-		if(JavaScriptImpl.getInstrance()!=null) {
-			JavaScriptImpl.getInstrance().webViewCallBack("", CodeConstant.Notify_Msg_CallKey+".xg-click");
-		}
+		String customText = result.getCustomContent();
+		executeMsg(customText,"xg-click");
 	}
 
 	@Override
-	public void onNotifactionShowedResult(Context arg0, XGPushShowedResult arg1) {
+	public void onNotifactionShowedResult(Context arg0, XGPushShowedResult result) {
 		// TODO Auto-generated method stub
-		if(JavaScriptImpl.getInstrance()!=null) {
-			JavaScriptImpl.getInstrance().webViewCallBack("", CodeConstant.Notify_Msg_CallKey+".xg-show");
-		}
+		String customText = result.getCustomContent();
+		executeMsg(customText,"xg-show");
 	}
 
 	@Override
@@ -59,15 +57,20 @@ public class MessageReceiver extends XGPushBaseReceiver {
 	@Override
 	public void onTextMessage(Context context, XGPushTextMessage textMessage) {
 		// TODO Auto-generated method stub
-		if(JavaScriptImpl.getInstrance()!=null) {
-			JavaScriptImpl.getInstrance().webViewCallBack("", CodeConstant.Notify_Msg_CallKey+".xg-msg");
-		}
-		
 		String customText = textMessage.getCustomContent();
-		
-		if(!StringUtils.isEmpty(customText)) {
-			Map<String,Object> params = JSONObject.parseObject(customText,Map.class);
+		executeMsg(customText,"xg-msg");		
+	}
+	
+	/**
+	 * 处理消息
+	 */
+	private void executeMsg(String msgContent, String msgType) {
+		if(!StringUtils.isEmpty(msgContent)) {
+			Map<String,Object> params = JSONObject.parseObject(msgContent,Map.class);
+			
+			//内部处理
 			switch(params.get("msgType").toString()) {
+				//支付订单
 				case "payOrder" :
 					//播放新订单语言
 					MediaManager.getInstrance().playMedia(MediaType.newOrderMedia);
@@ -83,7 +86,11 @@ public class MessageReceiver extends XGPushBaseReceiver {
 					break;
 			}
 		}
-		
+
+		// 前端处理
+		if(JavaScriptImpl.getInstrance()!=null) {
+			JavaScriptImpl.getInstrance().webViewCallBack(msgContent, CodeConstant.Notify_Msg_CallKey+"."+msgType);
+		}
 	}
 
 	@Override
