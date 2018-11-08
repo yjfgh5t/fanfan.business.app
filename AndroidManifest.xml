@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fanfan.business.app"
     android:versionCode="2"
-    android:versionName="1.2。0">
+    android:versionName="1.3。0">
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="21" />
