@@ -1,5 +1,6 @@
 package fanfan.app.view;
  
+import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.smtt.sdk.QbSdk;
 
 import android.content.Intent;
@@ -19,6 +20,9 @@ public class Application extends android.app.Application {
 		
 		//创建服务
 		initService();
+		
+		//信鸽服务
+		initXG();
 		
 		//刷新Html版本
 		VersionManager.getInstrance().refshHtmlVersion(); 
@@ -61,5 +65,9 @@ public class Application extends android.app.Application {
 		//启动前台通知服务
 		Intent  intent = new Intent(this,ForegroundService.class); 
 		startService(intent);
+	}
+	
+	private void initXG() {
+
 	}
 }

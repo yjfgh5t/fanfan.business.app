@@ -56,7 +56,14 @@ public class WebViewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_web_view);
 		webView = (X5WebView) findViewById(R.id.full_web_webview);
+		
+		//设置信鸽初始化信息
+		initXG();
+		
+		//WebView初始化信息
 		initWebView();
+		
+		//蓝牙初始化信息
 		BlueUtils.getInstance().init(this);
 	}
 
@@ -112,5 +119,13 @@ public class WebViewActivity extends Activity {
 		
 		//设置http地址 给h5使用
 		SPUtils.getInstance().put(SPConstant.httpPath, UrlConstant.domain);
+	}
+	
+	private void initXG() {
+		//信鸽开启厂商推送
+		XGPushConfig.enableOtherPush(getApplicationContext(), true);
+		
+		//启用华为推送调试
+		XGPushConfig.setHuaweiDebug(true);
 	}
 }

@@ -1,65 +1,42 @@
-package fanfan.app.receiver;
+package fanfan.app.msg;
 
-import java.util.Date;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.tencent.android.tpush.XGPushBaseReceiver;
-import com.tencent.android.tpush.XGPushClickedResult;
-import com.tencent.android.tpush.XGPushRegisterResult;
-import com.tencent.android.tpush.XGPushShowedResult;
-import com.tencent.android.tpush.XGPushTextMessage;
 
 import android.content.Context;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.manager.MediaManager;
 import fanfan.app.manager.PrintManager;
+import fanfan.app.model.MessageModel;
 import fanfan.app.model.OrderPrintModel;
 import fanfan.app.model.menum.MediaType;
 import fanfan.app.util.SPUtils;
 import fanfan.app.util.StringUtils;
 import fanfan.app.view.webview.JavaScriptImpl;
 
-public class MessageReceiver extends XGPushBaseReceiver {
-	
+public class MessageReceiveImpl implements IMessageReceive {
+
 	@Override
-	public void onDeleteTagResult(Context arg0, int arg1, String arg2) {
+	public void onNotifactionClicked(Context context, MessageModel message) {
 		// TODO Auto-generated method stub
+		executeMsg(message.getMsgContent(),"xg-click");
 	}
 
 	@Override
-	public void onNotifactionClickedResult(Context arg0, XGPushClickedResult result) {
+	public void onNotifactionShow(Context context, MessageModel message) {
 		// TODO Auto-generated method stub
-		String customText = result.getCustomContent();
-		executeMsg(customText,"xg-click");
+		executeMsg(message.getMsgContent(),"xg-show");
 	}
 
 	@Override
-	public void onNotifactionShowedResult(Context arg0, XGPushShowedResult result) {
+	public void onTextMessage(Context context, MessageModel message) {
 		// TODO Auto-generated method stub
-		String customText = result.getCustomContent();
-		executeMsg(customText,"xg-show");
+		executeMsg(message.getMsgContent(),"xg-msg");		
 	}
 
-	@Override
-	public void onRegisterResult(Context arg0, int arg1, XGPushRegisterResult arg2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onSetTagResult(Context arg0, int arg1, String arg2) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void onTextMessage(Context context, XGPushTextMessage textMessage) {
-		// TODO Auto-generated method stub
-		String customText = textMessage.getCustomContent();
-		executeMsg(customText,"xg-msg");		
-	}
 	
 	/**
 	 * 处理消息
@@ -92,11 +69,4 @@ public class MessageReceiver extends XGPushBaseReceiver {
 			JavaScriptImpl.getInstrance().webViewCallBack(msgContent, CodeConstant.Notify_Msg_CallKey+"."+msgType);
 		}
 	}
-
-	@Override
-	public void onUnregisterResult(Context arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
