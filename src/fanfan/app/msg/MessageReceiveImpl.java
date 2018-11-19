@@ -49,15 +49,18 @@ public class MessageReceiveImpl implements IMessageReceive {
 			switch(params.get("msgType").toString()) {
 				//支付订单
 				case "payOrder" :
-					//播放新订单语言
-					MediaManager.getInstrance().playMedia(MediaType.newOrderMedia);
-					//是否自动打印   
-					if("true".equals(SPUtils.getInstance().getString(SPConstant.autoPrint,"false"))){
-						try {
-							OrderPrintModel printModel =JSON.parseObject(params.get("data").toString(),OrderPrintModel.class);
-							PrintManager.getInstrance().printOrder(printModel);
-						}catch(Exception ex) {
-							System.out.println(ex);
+					//显示通知是执行
+					if(msgType.equals("xg-show")) {
+						//播放新订单语言
+						MediaManager.getInstrance().playMedia(MediaType.newOrderMedia);
+						//是否自动打印   
+						if("true".equals(SPUtils.getInstance().getString(SPConstant.autoPrint,"false"))){
+							try {
+								OrderPrintModel printModel =JSON.parseObject(params.get("data").toString(),OrderPrintModel.class);
+								PrintManager.getInstrance().printOrder(printModel);
+							}catch(Exception ex) {
+								System.out.println(ex);
+							}
 						}
 					}
 					break;

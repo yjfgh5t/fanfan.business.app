@@ -1,7 +1,5 @@
 package fanfan.app.receiver;
 
-import com.tencent.android.tpush.XGPushManager;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -13,7 +11,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.service.ForegroundService;
-import fanfan.app.util.ActivityUtils;
 import fanfan.app.util.Utils;
 import fanfan.app.view.WebViewActivity;
 
@@ -28,14 +25,7 @@ public class ForegroundReceiver extends BroadcastReceiver{
 			 serviceIntent.setClass(context, ForegroundService.class);  
             // 启动service   
             // 多次调用startService并不会启动多个service 而是会多次调用onStart  
-            context.startService(serviceIntent);  
-            
-            try {
-            	XGPushManager.registerPush(context);
-            }catch(Exception ex) {
-            	Log.e("启动信鸽服务失败", ex.getMessage());
-            }
-            
+            context.startService(serviceIntent);            
 		}
 		
 		//点击通知消息广播
@@ -77,8 +67,8 @@ public class ForegroundReceiver extends BroadcastReceiver{
             long firstime = SystemClock.elapsedRealtime();  
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);  
   
-            // 10秒一个周期，不停的发送广播  
-            am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstime,10 * 1000, sender);  
+            // 2分钟秒一个周期，不停的发送广播  
+            am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstime,2 * 60 * 1000, sender);  
         }
 		
 		

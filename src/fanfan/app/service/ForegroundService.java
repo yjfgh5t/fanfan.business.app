@@ -10,11 +10,13 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.receiver.ForegroundReceiver;
 import fanfan.app.util.SPUtils;
+import fanfan.app.util.Utils;
 import fanfan.business.app.R;
 
 public class ForegroundService extends Service {
@@ -46,13 +48,18 @@ public class ForegroundService extends Service {
 	@Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 		// 如果Service被终止
-        // 当资源允许情况下，重启service
+		if(!Utils.isServiceExisted(getApplicationContext(), "fanfan.app.service.ForegroundService")) {
+			// 重启服务
+	        restartService();
+		}
+		
+		 createNotification();
 		
 		 AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
          //读者可以修改此处的Minutes从而改变提醒间隔时间
          //此处是设置每隔5分钟启动一次
          //这是5分钟的毫秒数
-         int Minutes = 2 * 60 * 1000;
+         int Minutes = 5 * 60 * 1000;
          //SystemClock.elapsedRealtime()表示1970年1月1日0点至今所经历的时间
          long triggerAtTime = SystemClock.elapsedRealtime() + Minutes;
          //此处设置开启AlarmReceiver这个Service
@@ -62,20 +69,14 @@ public class ForegroundService extends Service {
          //ELAPSED_REALTIME_WAKEUP表示让定时任务的出发时间从系统开机算起，并且会唤醒CPU。
          manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
 		
-        return START_STICKY;
+         return super.onStartCommand(intent, START_STICKY, startId);
 	}
 	
 	@Override
     public void onDestroy() {
         super.onDestroy();
-        // 如果Service被杀死，干掉通知
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            NotificationManager mManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            mManager.cancel(NOTICE_ID);
-        }
         // 重启自己
-        Intent intent = new Intent(getApplicationContext(), ForegroundService.class);
-        startService(intent);
+        restartService();
     }
 	
 	
@@ -83,16 +84,19 @@ public class ForegroundService extends Service {
 	 * 创建通知消息
 	 */
 	private void createNotification() {
+		
 		//使用兼容版本
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 		//设置状态栏的通知图标
-		builder.setSmallIcon(R.drawable.icon_logo);
+		builder.setSmallIcon(R.drawable.icon_msg);
 		 //设置通知栏横条的图标
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.icon_logo));
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.icon_msg));
         //禁止用户点击删除按钮删除
         builder.setAutoCancel(false);
         //禁止滑动删除
         builder.setOngoing(true);
+        //值显示一个
+        builder.setOnlyAlertOnce(true);
         //优先级越高 越靠前
         builder.setPriority(NotificationCompat.PRIORITY_MAX); 
         //设置通知栏的标题内容
@@ -112,4 +116,15 @@ public class ForegroundService extends Service {
         startForeground(NOTICE_ID,notification);
 	}
 	
+	/**
+	 * 重启服务
+	 */
+	private void restartService() {
+		NotificationManager mManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+	    mManager.cancel(NOTICE_ID);
+		
+		 // 重启自己
+        Intent intent = new Intent(getApplicationContext(), ForegroundService.class);
+        startService(intent);
+	}
 }

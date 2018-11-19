@@ -6,8 +6,10 @@ import com.tencent.smtt.sdk.QbSdk;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
+import fanfan.app.constant.SPConstant;
 import fanfan.app.manager.VersionManager;
 import fanfan.app.service.ForegroundService;
+import fanfan.app.util.SPUtils;
 
 public class Application extends android.app.Application {
  
@@ -21,8 +23,8 @@ public class Application extends android.app.Application {
 		//创建服务
 		initService();
 		
-		//信鸽服务
-		initXG();
+		//初始设置数据
+		intiData();
 		
 		//刷新Html版本
 		VersionManager.getInstrance().refshHtmlVersion(); 
@@ -61,13 +63,20 @@ public class Application extends android.app.Application {
 	 */
 	private void initService() {
 		
-		 IntentFilter filter = new IntentFilter("MY_ACTION");
+		IntentFilter filter = new IntentFilter("MY_ACTION");
 		//启动前台通知服务
 		Intent  intent = new Intent(this,ForegroundService.class); 
 		startService(intent);
 	}
 	
-	private void initXG() {
-
+	/**
+	 * 默认自动打印
+	 */
+	private void intiData() {
+		//初始设置自动打印
+		if(SPUtils.getInstance().getString(SPConstant.autoPrint).equals("")) {
+			SPUtils.getInstance().put(SPConstant.autoPrint, "true");
+		}
+		
 	}
 }

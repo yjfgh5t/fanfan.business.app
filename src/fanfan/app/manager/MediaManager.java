@@ -9,12 +9,14 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.annotation.SuppressLint;
+import android.media.AudioManager;
 import android.media.MediaDataSource;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.model.menum.MediaType;
 import fanfan.app.util.StringUtils;
+import fanfan.app.util.Utils;
 
 /**
  * 播放管理
@@ -52,6 +54,11 @@ public class MediaManager {
 	private static String prePlayPath="";
 	
 	/**
+	 * 音量管理器
+	 */
+	 private AudioManager audioMgr = null;
+	
+	/**
 	 * 单列对象
 	 * @return
 	 */
@@ -73,7 +80,6 @@ public class MediaManager {
 	public synchronized void playMedia(MediaType mediaType) {
 		
 		try {
-			
 			MediaPlayer player = new MediaPlayer();
 			player.setOnCompletionListener(new OnCompletionListener() { 
 				/**
@@ -98,9 +104,11 @@ public class MediaManager {
 					player.setDataSource(printFailByBlueMediaPath);
 					break;
 			}
+			
 			player.prepare();
 			//如果当前没有播放
 			if(mediaPlayer==null || !mediaPlayer.isPlaying()) {
+				initPlayWork();
 				mediaPlayer = player;
 				mediaPlayer.start();
 			}else {
@@ -110,6 +118,16 @@ public class MediaManager {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	private void initPlayWork() {
+		try {
+		 audioMgr = (AudioManager) Utils.getApp().getSystemService(Utils.getApp().AUDIO_SERVICE);
+		 int maxVolume = audioMgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+		 audioMgr.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume,AudioManager.FLAG_PLAY_SOUND);
+		}catch(Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 	
