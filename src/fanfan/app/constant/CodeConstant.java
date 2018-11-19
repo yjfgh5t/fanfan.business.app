@@ -36,4 +36,11 @@ public class CodeConstant {
 	 */
 	public static final String Notify_Blue_ToothKey ="local_notify_blue_booth_event";
 	
+	/**
+	 * 点击前置通知广播
+	 */
+	public static final String Notify_Click_Action = "fanfan.business.app.foregound.click.action";
+	
+	public static final String Notify_Alarm_Action = "fanfan.business.app.foregound.alarm.action";
+	
 }
