@@ -1,5 +1,8 @@
 package fanfan.app.service;
  
+import java.util.Calendar;
+import java.util.Date;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -7,16 +10,13 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.receiver.ForegroundReceiver;
 import fanfan.app.util.SPUtils;
-import fanfan.app.util.Utils;
 import fanfan.business.app.R;
 
 public class ForegroundService extends Service {
@@ -27,6 +27,8 @@ public class ForegroundService extends Service {
     public static final int NOTICE_ID = 100;
     
     private boolean IS_CREATE=false;
+    
+    private Long startTime =0L;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -37,30 +39,21 @@ public class ForegroundService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		if(!IS_CREATE) {
-			//创建通知栏
-			createNotification();
-			//设置已经创建
-			IS_CREATE = true;
-		}
+		startTime = SystemClock.elapsedRealtime();
+		//创建通知栏
+		createNotification();
 	}
 
 	@Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-		// 如果Service被终止
-		if(!Utils.isServiceExisted(getApplicationContext(), "fanfan.app.service.ForegroundService")) {
-			// 重启服务
-	        restartService();
-		}
+    public int onStartCommand(Intent intent, int flags, int startId) {		
 		
+		 //设置通知
 		 createNotification();
-		
+		 
 		 AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
          //读者可以修改此处的Minutes从而改变提醒间隔时间
-         //此处是设置每隔5分钟启动一次
-         //这是5分钟的毫秒数
-         int Minutes = 5 * 60 * 1000;
-         //SystemClock.elapsedRealtime()表示1970年1月1日0点至今所经历的时间
+         //此处是设置每隔2分钟启动一次
+         int Minutes = 1 * 60 * 1000;
          long triggerAtTime = SystemClock.elapsedRealtime() + Minutes;
          //此处设置开启AlarmReceiver这个Service
          Intent recevierIntent = new Intent(this, ForegroundReceiver.class);
@@ -74,9 +67,9 @@ public class ForegroundService extends Service {
 	
 	@Override
     public void onDestroy() {
+		//停止前台服务
+		stopForeground(true);
         super.onDestroy();
-        // 重启自己
-        restartService();
     }
 	
 	
@@ -98,9 +91,13 @@ public class ForegroundService extends Service {
         //值显示一个
         builder.setOnlyAlertOnce(true);
         //优先级越高 越靠前
-        builder.setPriority(NotificationCompat.PRIORITY_MAX); 
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
+        
+        String now = addZero(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))+":"+addZero(Calendar.getInstance().get(Calendar.MINUTE));
+        
         //设置通知栏的标题内容
-        builder.setContentTitle(SPUtils.getInstance().getString(SPConstant.notifyContentTitle, "饭饭商户版正在运行"));
+        builder.setContentTitle(SPUtils.getInstance().getString(SPConstant.notifyContentTitle, "饭饭商户版正在运行 "+now));
+        //内容
         builder.setContentText(SPUtils.getInstance().getString(SPConstant.notifyContentText, "为保证正常接收订单消息、请勿关闭"));
         
         Intent activeIntent = new Intent(this,ForegroundReceiver.class);
@@ -126,5 +123,17 @@ public class ForegroundService extends Service {
 		 // 重启自己
         Intent intent = new Intent(getApplicationContext(), ForegroundService.class);
         startService(intent);
+	}
+	
+	/**
+	 * 补零
+	 * @param time
+	 * @return
+	 */
+	private String addZero(Integer time) {
+		if(time<10) {
+			return "0"+time;
+		}
+		return time+"";
 	}
 }

@@ -83,6 +83,14 @@ public class WebViewActivity extends Activity {
 	protected void onNewIntent(Intent intent) {
 		javaScriptAPI.webViewCallBack("", CodeConstant.Notify_Msg_CallKey + ".notify-click");
 	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		//发送广播
+		
+		super.onResume();
+	}
 
 	/**
 	 * 回退键

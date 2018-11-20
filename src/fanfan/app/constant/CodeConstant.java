@@ -4,7 +4,7 @@ public class CodeConstant {
 	/**
 	 * 开发环境
 	 */
-	public static final boolean Is_Dev=true;
+	public static final boolean Is_Dev=false;
 	
 	/**
 	 * 拍照
@@ -40,7 +40,8 @@ public class CodeConstant {
 	 * 点击前置通知广播
 	 */
 	public static final String Notify_Click_Action = "fanfan.business.app.foregound.click.action";
-	
+	/**
+	 * 定时任务广播
+	 */
 	public static final String Notify_Alarm_Action = "fanfan.business.app.foregound.alarm.action";
-	
 }

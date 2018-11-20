@@ -59,12 +59,9 @@
   		
   		
   		<!-- 前置通知栏 -->
-        <service android:name="fanfan.app.service.ForegroundService"
-        	 android:exported="true"
-        	 android:enabled="true"></service>
+        <service android:name="fanfan.app.service.ForegroundService" android:exported="true" android:enabled="true"></service>
         <!-- 前置通知广播 -->
-        <receiver android:name="fanfan.app.receiver.ForegroundReceiver"
-            	  android:exported="true">
+        <receiver android:name="fanfan.app.receiver.ForegroundReceiver" android:exported="true">
             <intent-filter >
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
