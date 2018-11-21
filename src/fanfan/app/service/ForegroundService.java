@@ -98,7 +98,7 @@ public class ForegroundService extends Service {
         //设置通知栏的标题内容
         builder.setContentTitle(SPUtils.getInstance().getString(SPConstant.notifyContentTitle, "饭饭商户版正在运行 "+now));
         //内容
-        builder.setContentText(SPUtils.getInstance().getString(SPConstant.notifyContentText, "为保证正常接收订单消息、请勿关闭"));
+        builder.setContentText(SPUtils.getInstance().getString(SPConstant.notifyContentText, "为保证接收订单信息、请勿关闭"));
         
         Intent activeIntent = new Intent(this,ForegroundReceiver.class);
         activeIntent.setAction(CodeConstant.Notify_Click_Action);

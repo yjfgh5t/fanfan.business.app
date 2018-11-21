@@ -19,13 +19,11 @@ public class ForegroundReceiver extends BroadcastReceiver{
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		//时钟广播
-		if(CodeConstant.Notify_Alarm_Action.equals(intent.getAction()) || CodeConstant.Notify_Click_Action.equals(intent.getAction())) {
-			 Intent serviceIntent = new Intent();  
-			 serviceIntent.setClass(context, ForegroundService.class);  
-            // 启动service
-            context.startService(serviceIntent);
-		}
+		//时钟广播、点击通知广播、屏幕亮起关闭广播
+		Intent serviceIntent = new Intent();  
+		serviceIntent.setClass(context, ForegroundService.class);  
+        // 启动service
+        context.startService(serviceIntent);
 		
 		//点击通知消息广播
 		if(CodeConstant.Notify_Click_Action.equals(intent.getAction())) {

@@ -1,41 +1,20 @@
 package fanfan.app.view;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.alibaba.fastjson.JSONObject;
-import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushConfig;
-import com.tencent.android.tpush.XGPushManager;
-import com.tencent.android.tpush.common.Constants;
-
+import com.tencent.android.tpush.XGPushReceiver;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.IntentFilter;
 import android.graphics.PixelFormat;
-import android.media.ThumbnailUtils;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
-import fanfan.app.manager.MediaManager;
-import fanfan.app.manager.PrintManager;
 import fanfan.app.manager.VersionManager;
+import fanfan.app.receiver.ForegroundReceiver;
 import fanfan.app.util.BlueUtils;
-import fanfan.app.util.PhotoUtil;
 import fanfan.app.util.SPUtils;
-import fanfan.app.util.ZipUtils;
 import fanfan.app.view.webview.JavaScriptAPI;
 import fanfan.app.view.webview.JavaScriptImpl;
 import fanfan.app.view.webview.X5WebView;
@@ -50,6 +29,8 @@ public class WebViewActivity extends Activity {
 	private static String tempFile = "temp_photo.jpg";
 
 	public static int activity_result_scan = 2; 
+	
+	private ForegroundReceiver foregroundReceiver;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,11 +65,16 @@ public class WebViewActivity extends Activity {
 		javaScriptAPI.webViewCallBack("", CodeConstant.Notify_Msg_CallKey + ".notify-click");
 	}
 	
+	/**
+	 * 打开界面
+	 */
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		//发送广播
-		
+		Intent intent = new Intent();
+		intent.setAction(CodeConstant.Notify_Alarm_Action);
+		sendBroadcast(intent);
 		super.onResume();
 	}
 
@@ -99,6 +85,13 @@ public class WebViewActivity extends Activity {
 	public void onBackPressed() {
 		// super.onBackPressed();
 		javaScriptAPI.webViewCallBack("回退", CodeConstant.Notify_Msg_CallKey + ".back-key");
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		unregisterReceiver(foregroundReceiver);
+		super.onDestroy();
 	}
 
 	@SuppressWarnings("static-access")
@@ -131,9 +124,17 @@ public class WebViewActivity extends Activity {
 	
 	private void initXG() {
 		//信鸽开启厂商推送
-		XGPushConfig.enableOtherPush(getApplicationContext(), true);
+		XGPushConfig.enableOtherPush(getApplicationContext(), CodeConstant.Is_Dev);
 		
 		//启用华为推送调试
-		XGPushConfig.setHuaweiDebug(true);
+		XGPushConfig.setHuaweiDebug(CodeConstant.Is_Dev);
+		
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_SCREEN_ON);
+		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		
+		//注册屏幕广播事件
+		foregroundReceiver = new ForegroundReceiver();
+		registerReceiver(foregroundReceiver, filter);
 	}
 }

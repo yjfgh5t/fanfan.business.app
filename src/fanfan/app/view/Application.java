@@ -1,6 +1,7 @@
 package fanfan.app.view;
  
 import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushReceiver;
 import com.tencent.smtt.sdk.QbSdk;
 
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.IntentFilter;
 import android.util.Log;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.manager.VersionManager;
+import fanfan.app.receiver.ForegroundReceiver;
 import fanfan.app.service.ForegroundService;
 import fanfan.app.util.SPUtils;
 
@@ -62,8 +64,6 @@ public class Application extends android.app.Application {
 	 * 加载服务
 	 */
 	private void initService() {
-		
-		IntentFilter filter = new IntentFilter("MY_ACTION");
 		//启动前台通知服务
 		Intent  intent = new Intent(this,ForegroundService.class); 
 		startService(intent);
