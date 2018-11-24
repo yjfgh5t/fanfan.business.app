@@ -19,8 +19,21 @@ public class BlueOldUtils {
 
 	boolean hasConnect = false;
 
-	public BlueOldUtils(Context context) {
+	static BlueOldUtils instance;
 
+	public static BlueOldUtils getInstance() {
+		if (instance == null) {
+			instance = new BlueOldUtils();
+		}
+		return instance;
+	}
+
+	/**
+	 * 初始化
+	 * 
+	 * @param context
+	 */
+	public void init(Context context) {
 		if (Build.VERSION.SDK_INT >= 18) {
 			this.bluetoothAdapter = ((BluetoothManager) context.getSystemService("bluetooth")).getAdapter();
 		}
@@ -137,9 +150,20 @@ public class BlueOldUtils {
 	 */
 	public boolean hasConnect() {
 		if (localBluetoothSocket != null) {
-			return hasConnect && localBluetoothSocket.isConnected();
+			return hasConnect;
 		}
 		return false;
+	}
+
+	public void setConnect(boolean connect) {
+		hasConnect = connect;
+	}
+
+	public BluetoothSocket getConnectSocket() {
+		if (hasConnect()) {
+			return localBluetoothSocket;
+		}
+		return null;
 	}
 
 	/**
@@ -152,7 +176,7 @@ public class BlueOldUtils {
 	public void connet(BluetoothDevice paramBluetoothDevice) throws Exception {
 		try {
 			cancelBondProcess(paramBluetoothDevice);
-			if (paramBluetoothDevice.getBondState() == 12) {
+			if (paramBluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
 				localBluetoothSocket = paramBluetoothDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 				// localObject = localBluetoothSocket;
 			}

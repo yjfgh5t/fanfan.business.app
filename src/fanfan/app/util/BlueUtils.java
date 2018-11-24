@@ -24,6 +24,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
+import fanfan.app.util.standard.BTUtilListener;
 
 @SuppressLint("NewApi")
 public class BlueUtils {
@@ -35,7 +36,6 @@ public class BlueUtils {
 	private BluetoothGattCallback mGattCallback;
 	private BluetoothGatt toothGatt;
 	private BroadcastReceiver mFoundReceiver;
-	private BroadcastReceiver mStateReceiver;
 	private BluetoothGattService gattService;
 	private List<BluetoothGattService> gattServices;
 	private List<BluetoothGattCharacteristic> gattCharacteristic;
@@ -112,45 +112,6 @@ public class BlueUtils {
 			}
 		};
 
-		// 蓝牙状态更改广播
-		mStateReceiver = new BroadcastReceiver() {
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				// TODO Auto-generated method stub
-				if (utilListener == null) {
-					return;
-				}
-				String action = intent.getAction();
-				if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-					int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
-					switch (state) {
-					case BluetoothAdapter.STATE_OFF:
-						Log.d("aaa", "STATE_OFF 手机蓝牙关闭");
-						closeToothGatt(toothGatt);
-						utilListener.onDisConnected(null);
-						break;
-					case BluetoothAdapter.STATE_TURNING_OFF:
-						Log.d("aaa", "STATE_TURNING_OFF 手机蓝牙正在关闭");
-						break;
-					case BluetoothAdapter.STATE_ON:
-						if (mCurDevice != null) {
-							// 重新链接
-							connect(mCurDevice.getAddress());
-							// 清空特性数据
-							gattCharacteristic.clear();
-							// 清空gttSevice
-							gattServices.clear();
-						}
-						break;
-					case BluetoothAdapter.STATE_TURNING_ON:
-						Log.d("aaa", "STATE_TURNING_ON 手机蓝牙正在开启");
-						break;
-					}
-				}
-			}
-		};
-
 		// 蓝牙操作事件
 		mGattCallback = new BluetoothGattCallback() {
 			@Override
@@ -211,10 +172,6 @@ public class BlueUtils {
 				}
 			}
 		};
-
-		// 注册监听广播
-		IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-		context.registerReceiver(mStateReceiver, filter);
 
 		return mInstance;
 	}
@@ -419,13 +376,7 @@ public class BlueUtils {
 			return;
 		}
 
-		// if(mCurDevice.getBondState() != mCurDevice.BOND_BONDED) {
-		// bond();
-		// return;
-		// }
 		try {
-			new BlueOldUtils(context).cancelBondProcess(mCurDevice);
-
 			// 关闭Gatt
 			closeToothGatt(toothGatt);
 
@@ -506,23 +457,4 @@ public class BlueUtils {
 	public void setBTUtilListener(BTUtilListener listener) {
 		utilListener = listener;
 	}
-
-	public interface BTUtilListener {
-		void onLeScanStart(); // 扫描开始
-
-		void onLeScanStop(); // 扫描停止
-
-		void onLeScanDevices(BluetoothDevice blueToothModel, String deviceName); // 扫描得到的设备
-
-		void onConnected(BluetoothDevice mCurDevice); // 设备的连接
-
-		void onDisConnected(BluetoothDevice mCurDevice); // 设备断开连接
-
-		void onConnecting(BluetoothDevice mCurDevice); // 设备连接中
-
-		void onDisConnecting(BluetoothDevice mCurDevice); // 设备连接失败
-
-		void onCancelBound(BluetoothDevice mCurDevice);
-	}
-
 }

@@ -1,61 +1,68 @@
 package fanfan.app.model;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.annotation.JSONField;
-
 public class OrderPrintModel {
-	
 
 	/**
 	 * 订单号
 	 */
-	 private String orderNum;
-	
+	private String orderNum;
+
 	/**
 	 * 总金额
 	 */
-	private float orderTotal; 
-	
+	private float orderTotal;
+
 	/**
-	  * 支付金额
-	  */
-	 private float orderPay;
-	 
-	 /**
-	  * 桌号
-	  */
-	 private String orderDeskNum;
-	 
-	 /**
-	  * 编号
-	  */
-	 private String orderDateNum;
-	
-	 /**
-	  * 备注
-	  */
-	 private String orderRemark;
-	 
-	 /**
-	  * 下单时间
-	  */
-	 private String orderTime;
-	 
-	 /**
-	  * 商品数量
-	  */
-	 private Integer commoditySize;
-	 
-	 /**
-	  * 打包/膛吃
-	  */
-	 private String orderTypeText;
-	 
-	 public String getOrderTypeText() {
+	 * 支付金额
+	 */
+	private float orderPay;
+
+	/**
+	 * 桌号
+	 */
+	private String orderDeskNum;
+
+	/**
+	 * 编号
+	 */
+	private String orderDateNum;
+
+	/**
+	 * 备注
+	 */
+	private String orderRemark;
+
+	/**
+	 * 下单时间
+	 */
+	private String orderTime;
+
+	/**
+	 * 商品数量
+	 */
+	private Integer commoditySize;
+
+	/**
+	 * 支付类型文本
+	 */
+	private String orderPayTypeText;
+
+	/**
+	 * 打包/膛吃
+	 */
+	private String orderTypeText;
+
+	public String getOrderPayTypeText() {
+		return orderPayTypeText;
+	}
+
+	public void setOrderPayTypeText(String orderPayTypeText) {
+		this.orderPayTypeText = orderPayTypeText;
+	}
+
+	public String getOrderTypeText() {
 		return orderTypeText;
 	}
 
@@ -64,9 +71,9 @@ public class OrderPrintModel {
 	}
 
 	/**
-	  * 订单详情
-	  */
-	 private List<OrderDetailPrintModel> details;
+	 * 订单详情
+	 */
+	private List<OrderDetailPrintModel> details;
 
 	public String getOrderNum() {
 		return orderNum;
