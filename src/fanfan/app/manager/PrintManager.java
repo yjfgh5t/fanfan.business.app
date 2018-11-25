@@ -85,15 +85,24 @@ public class PrintManager {
 			PrintUtils.printText(PrintUtils.printThreeData("菜品", "数量", "金额\n"));
 			PrintUtils.selectCommand(PrintUtils.BOLD_CANCEL);
 			List<OrderDetailPrintModel> listDetails = printModel.getDetails();
+			int totalSize = 0;
 			if (listDetails != null) {
 				for (OrderDetailPrintModel detail : listDetails) {
+					// 商品总数量
+					if (detail.getOutType() == OrderDetailPrintModel.TYPE_COMMODITY
+							|| detail.getOutType().equals(OrderDetailPrintModel.TYPE_COMMODITY_NORMS)) {
+						totalSize++;
+					}
 					// outType=6时未餐盒 不需要打印数量
-					String outSize = detail.getOutType().equals(6) ? "" : detail.getOutSize() + "";
+					String outSize = detail.getOutType().equals(OrderDetailPrintModel.TYPE_PACKAGE) ? ""
+							: detail.getOutSize() + "";
+
 					PrintUtils.printText(
 							PrintUtils.printThreeData(detail.getOutTitle(), outSize, detail.getOutPrice() + "\n"));
 				}
 			}
-			PrintUtils.printText(PrintUtils.printTwoData("合计: ", printModel.getOrderTotal() + "\n"));
+
+			PrintUtils.printText(PrintUtils.printThreeData("合计: ", totalSize + "", printModel.getOrderTotal() + "\n"));
 			PrintUtils.printText("--------------------------------\n");
 			PrintUtils.printText(PrintUtils.printTwoData("付款方式: " + printModel.getOrderPayTypeText(),
 					"付款: " + printModel.getOrderPay()));

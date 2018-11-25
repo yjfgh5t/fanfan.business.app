@@ -1,5 +1,12 @@
 package fanfan.app.util;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -10,13 +17,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <pre>
@@ -39,285 +39,294 @@ import java.util.Map;
  */
 public final class Utils {
 
-    @SuppressLint("StaticFieldLeak")
-    private static Application sApplication;
+	@SuppressLint("StaticFieldLeak")
+	private static Application sApplication;
 
-    private static final ActivityLifecycleImpl ACTIVITY_LIFECYCLE = new ActivityLifecycleImpl();
+	private static final ActivityLifecycleImpl ACTIVITY_LIFECYCLE = new ActivityLifecycleImpl();
 
-    private Utils() {
-        throw new UnsupportedOperationException("u can't instantiate me...");
-    }
+	private Utils() {
+		throw new UnsupportedOperationException("u can't instantiate me...");
+	}
 
-    /**
-     * Init utils.
-     * <p>Init it in the class of Application.</p>
-     *
-     * @param context context
-     */
-    public static void init(@NonNull final Context context) {
-        init((Application) context.getApplicationContext());
-    }
+	/**
+	 * Init utils.
+	 * <p>
+	 * Init it in the class of Application.
+	 * </p>
+	 *
+	 * @param context
+	 *            context
+	 */
+	public static void init(@NonNull final Context context) {
+		init((Application) context.getApplicationContext());
+	}
 
-    /**
-     * Init utils.
-     * <p>Init it in the class of Application.</p>
-     *
-     * @param app application
-     */
-    @SuppressLint("NewApi")
+	/**
+	 * Init utils.
+	 * <p>
+	 * Init it in the class of Application.
+	 * </p>
+	 *
+	 * @param app
+	 *            application
+	 */
+	@SuppressLint("NewApi")
 	public static void init(@NonNull final Application app) {
-        if (sApplication == null) {
-            Utils.sApplication = app;
-            Utils.sApplication.registerActivityLifecycleCallbacks(ACTIVITY_LIFECYCLE);
-        }
-    }
+		if (sApplication == null) {
+			Utils.sApplication = app;
+			Utils.sApplication.registerActivityLifecycleCallbacks(ACTIVITY_LIFECYCLE);
+		}
+	}
 
-    /**
-     * Return the context of Application object.
-     *
-     * @return the context of Application object
-     */
-    public static Application getApp() {
-        if (sApplication != null) return sApplication;
-        try {
-            @SuppressLint("PrivateApi")
-            Class<?> activityThread = Class.forName("android.app.ActivityThread");
-            Object at = activityThread.getMethod("currentActivityThread").invoke(null);
-            Object app = activityThread.getMethod("getApplication").invoke(at);
-            if (app == null) {
-                throw new NullPointerException("u should init first");
-            }
-            init((Application) app);
-            return sApplication;
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        throw new NullPointerException("u should init first");
-    }
-    
-    /**
-     * 判断应用是否存活
-     * @param context
-     * @param packageName
-     * @return
-     */
-    @SuppressWarnings("deprecation")
-	public static boolean isAppAlive(Context context,String packageName) {
-    	ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
-        if (list.size() <= 0) {
-            return false;
-        }
-        for (ActivityManager.RunningTaskInfo info : list) {
-            if (info.baseActivity.getPackageName().equals(packageName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * 判断Service是否存活
-     * @param context
-     * @param className
-     * @return
-     */
-    public static boolean isServiceExisted(Context context, String className) {
-        ActivityManager activityManager = (ActivityManager) context
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> serviceList = activityManager
-                .getRunningServices(Integer.MAX_VALUE);
+	/**
+	 * Return the context of Application object.
+	 *
+	 * @return the context of Application object
+	 */
+	public static Application getApp() {
+		if (sApplication != null)
+			return sApplication;
+		try {
+			@SuppressLint("PrivateApi")
+			Class<?> activityThread = Class.forName("android.app.ActivityThread");
+			Object at = activityThread.getMethod("currentActivityThread").invoke(null);
+			Object app = activityThread.getMethod("getApplication").invoke(at);
+			if (app == null) {
+				throw new NullPointerException("u should init first");
+			}
+			init((Application) app);
+			return sApplication;
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		throw new NullPointerException("u should init first");
+	}
 
-        if (!(serviceList.size() > 0)) {
-            return false;
-        }
+	/**
+	 * 判断应用是否存活
+	 * 
+	 * @param context
+	 * @param packageName
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	public static boolean isAppAlive(Context context, String packageName) {
+		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
+		if (list.size() <= 0) {
+			return false;
+		}
+		for (ActivityManager.RunningTaskInfo info : list) {
+			if (info.baseActivity.getPackageName().equals(packageName)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-        for (int i = 0; i < serviceList.size(); i++) {
-            RunningServiceInfo serviceInfo = serviceList.get(i);
-            ComponentName serviceName = serviceInfo.service;
-            if (serviceName.getClassName().equals(className)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
+	/**
+	 * 判断Service是否存活
+	 * 
+	 * @param context
+	 * @param className
+	 * @return
+	 */
+	public static boolean isServiceAlive(Context context, String className) {
+		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		List<ActivityManager.RunningServiceInfo> serviceList = activityManager.getRunningServices(Integer.MAX_VALUE);
 
-    static ActivityLifecycleImpl getActivityLifecycle() {
-        return ACTIVITY_LIFECYCLE;
-    }
+		if (!(serviceList.size() > 0)) {
+			return false;
+		}
 
-    static LinkedList<Activity> getActivityList() {
-        return ACTIVITY_LIFECYCLE.mActivityList;
-    }
+		for (int i = 0; i < serviceList.size(); i++) {
+			RunningServiceInfo serviceInfo = serviceList.get(i);
+			ComponentName serviceName = serviceInfo.service;
+			if (serviceName.getClassName().equals(className)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    static Context getTopActivityOrApp() {
-        if (isAppForeground()) {
-            Activity topActivity = ACTIVITY_LIFECYCLE.getTopActivity();
-            return topActivity == null ? Utils.getApp() : topActivity;
-        } else {
-            return Utils.getApp();
-        }
-    }
+	static ActivityLifecycleImpl getActivityLifecycle() {
+		return ACTIVITY_LIFECYCLE;
+	}
 
-    static boolean isAppForeground() {
-        ActivityManager am =
-                (ActivityManager) Utils.getApp().getSystemService(Context.ACTIVITY_SERVICE);
-        if (am == null) return false;
-        List<ActivityManager.RunningAppProcessInfo> info = am.getRunningAppProcesses();
-        if (info == null || info.size() == 0) return false;
-        for (ActivityManager.RunningAppProcessInfo aInfo : info) {
-            if (aInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                return aInfo.processName.equals(Utils.getApp().getPackageName());
-            }
-        }
-        return false;
-    } 
-    
+	static LinkedList<Activity> getActivityList() {
+		return ACTIVITY_LIFECYCLE.mActivityList;
+	}
 
-    @SuppressLint("NewApi")
+	static Context getTopActivityOrApp() {
+		if (isAppForeground()) {
+			Activity topActivity = ACTIVITY_LIFECYCLE.getTopActivity();
+			return topActivity == null ? Utils.getApp() : topActivity;
+		} else {
+			return Utils.getApp();
+		}
+	}
+
+	static boolean isAppForeground() {
+		ActivityManager am = (ActivityManager) Utils.getApp().getSystemService(Context.ACTIVITY_SERVICE);
+		if (am == null)
+			return false;
+		List<ActivityManager.RunningAppProcessInfo> info = am.getRunningAppProcesses();
+		if (info == null || info.size() == 0)
+			return false;
+		for (ActivityManager.RunningAppProcessInfo aInfo : info) {
+			if (aInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+				return aInfo.processName.equals(Utils.getApp().getPackageName());
+			}
+		}
+		return false;
+	}
+
+	@SuppressLint("NewApi")
 	static class ActivityLifecycleImpl implements ActivityLifecycleCallbacks {
 
-        final LinkedList<Activity>                        mActivityList      = new LinkedList<>();
-        final HashMap<Object, OnAppStatusChangedListener> mStatusListenerMap = new HashMap<>();
+		final LinkedList<Activity> mActivityList = new LinkedList<>();
+		final HashMap<Object, OnAppStatusChangedListener> mStatusListenerMap = new HashMap<>();
 
-        private int mForegroundCount = 0;
-        private int mConfigCount     = 0;
+		private int mForegroundCount = 0;
+		private int mConfigCount = 0;
 
-        void addListener(final Object object, final OnAppStatusChangedListener listener) {
-            mStatusListenerMap.put(object, listener);
-        }
+		void addListener(final Object object, final OnAppStatusChangedListener listener) {
+			mStatusListenerMap.put(object, listener);
+		}
 
-        void removeListener(final Object object) {
-            mStatusListenerMap.remove(object);
-        }
+		void removeListener(final Object object) {
+			mStatusListenerMap.remove(object);
+		}
 
-        @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-            setTopActivity(activity);
-        }
+		@Override
+		public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+			setTopActivity(activity);
+		}
 
-        @Override
-        public void onActivityStarted(Activity activity) {
-            setTopActivity(activity);
-            if (mForegroundCount <= 0) {
-                postStatus(true);
-            }
-            if (mConfigCount < 0) {
-                ++mConfigCount;
-            } else {
-                ++mForegroundCount;
-            }
-        }
+		@Override
+		public void onActivityStarted(Activity activity) {
+			setTopActivity(activity);
+			if (mForegroundCount <= 0) {
+				postStatus(true);
+			}
+			if (mConfigCount < 0) {
+				++mConfigCount;
+			} else {
+				++mForegroundCount;
+			}
+		}
 
-        @Override
-        public void onActivityResumed(Activity activity) {
-            setTopActivity(activity);
-        }
+		@Override
+		public void onActivityResumed(Activity activity) {
+			setTopActivity(activity);
+		}
 
-        @Override
-        public void onActivityPaused(Activity activity) {
+		@Override
+		public void onActivityPaused(Activity activity) {
 
-        }
+		}
 
-        @Override
-        public void onActivityStopped(Activity activity) {
-            if (activity.isChangingConfigurations()) {
-                --mConfigCount;
-            } else {
-                --mForegroundCount;
-                if (mForegroundCount <= 0) {
-                    postStatus(false);
-                }
-            }
-        }
+		@Override
+		public void onActivityStopped(Activity activity) {
+			if (activity.isChangingConfigurations()) {
+				--mConfigCount;
+			} else {
+				--mForegroundCount;
+				if (mForegroundCount <= 0) {
+					postStatus(false);
+				}
+			}
+		}
 
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+		@Override
+		public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
 
-        }
+		}
 
-        @Override
-        public void onActivityDestroyed(Activity activity) {
-            mActivityList.remove(activity);
-        }
+		@Override
+		public void onActivityDestroyed(Activity activity) {
+			mActivityList.remove(activity);
+		}
 
-        private void postStatus(final boolean isForeground) {
-            if (mStatusListenerMap.isEmpty()) return;
-            for (OnAppStatusChangedListener onAppStatusChangedListener : mStatusListenerMap.values()) {
-                if (onAppStatusChangedListener == null) return;
-                if (isForeground) {
-                    onAppStatusChangedListener.onForeground();
-                } else {
-                    onAppStatusChangedListener.onBackground();
-                }
-            }
-        }
+		private void postStatus(final boolean isForeground) {
+			if (mStatusListenerMap.isEmpty())
+				return;
+			for (OnAppStatusChangedListener onAppStatusChangedListener : mStatusListenerMap.values()) {
+				if (onAppStatusChangedListener == null)
+					return;
+				if (isForeground) {
+					onAppStatusChangedListener.onForeground();
+				} else {
+					onAppStatusChangedListener.onBackground();
+				}
+			}
+		}
 
-        private void setTopActivity(final Activity activity) {
-            //if (activity.getClass() == PermissionUtils.PermissionActivity.class) return;
-            if (mActivityList.contains(activity)) {
-                if (!mActivityList.getLast().equals(activity)) {
-                    mActivityList.remove(activity);
-                    mActivityList.addLast(activity);
-                }
-            } else {
-                mActivityList.addLast(activity);
-            }
-        }
+		private void setTopActivity(final Activity activity) {
+			// if (activity.getClass() == PermissionUtils.PermissionActivity.class) return;
+			if (mActivityList.contains(activity)) {
+				if (!mActivityList.getLast().equals(activity)) {
+					mActivityList.remove(activity);
+					mActivityList.addLast(activity);
+				}
+			} else {
+				mActivityList.addLast(activity);
+			}
+		}
 
-        Activity getTopActivity() {
-            if (!mActivityList.isEmpty()) {
-                final Activity topActivity = mActivityList.getLast();
-                if (topActivity != null) {
-                    return topActivity;
-                }
-            }
-            // using reflect to get top activity
-            try {
-                @SuppressLint("PrivateApi")
-                Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
-                Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null);
-                Field activitiesField = activityThreadClass.getDeclaredField("mActivityList");
-                activitiesField.setAccessible(true);
-                Map activities = (Map) activitiesField.get(activityThread);
-                if (activities == null) return null;
-                for (Object activityRecord : activities.values()) {
-                    Class activityRecordClass = activityRecord.getClass();
-                    Field pausedField = activityRecordClass.getDeclaredField("paused");
-                    pausedField.setAccessible(true);
-                    if (!pausedField.getBoolean(activityRecord)) {
-                        Field activityField = activityRecordClass.getDeclaredField("activity");
-                        activityField.setAccessible(true);
-                        Activity activity = (Activity) activityField.get(activityRecord);
-                        setTopActivity(activity);
-                        return activity;
-                    }
-                }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
+		Activity getTopActivity() {
+			if (!mActivityList.isEmpty()) {
+				final Activity topActivity = mActivityList.getLast();
+				if (topActivity != null) {
+					return topActivity;
+				}
+			}
+			// using reflect to get top activity
+			try {
+				@SuppressLint("PrivateApi")
+				Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
+				Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null);
+				Field activitiesField = activityThreadClass.getDeclaredField("mActivityList");
+				activitiesField.setAccessible(true);
+				Map activities = (Map) activitiesField.get(activityThread);
+				if (activities == null)
+					return null;
+				for (Object activityRecord : activities.values()) {
+					Class activityRecordClass = activityRecord.getClass();
+					Field pausedField = activityRecordClass.getDeclaredField("paused");
+					pausedField.setAccessible(true);
+					if (!pausedField.getBoolean(activityRecord)) {
+						Field activityField = activityRecordClass.getDeclaredField("activity");
+						activityField.setAccessible(true);
+						Activity activity = (Activity) activityField.get(activityRecord);
+						setTopActivity(activity);
+						return activity;
+					}
+				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
 
-    public interface OnAppStatusChangedListener {
-        void onForeground();
+	public interface OnAppStatusChangedListener {
+		void onForeground();
 
-        void onBackground();
-    }
+		void onBackground();
+	}
 }

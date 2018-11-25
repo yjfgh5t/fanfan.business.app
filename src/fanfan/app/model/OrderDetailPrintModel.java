@@ -1,47 +1,49 @@
 package fanfan.app.model;
 
-import java.math.BigDecimal;
-
 public class OrderDetailPrintModel {
-	
-	  public String getOutTitle() {
-			return outTitle;
-		}
 
-		public void setOutTitle(String outTitle) {
-			this.outTitle = outTitle;
-		}
+	public final static Integer TYPE_COMMODITY = 1;
+	public final static Integer TYPE_COMMODITY_NORMS = 5;
+	public final static Integer TYPE_PACKAGE = 6;
 
-		public float getOutPrice() {
-			return outPrice;
-		}
+	public String getOutTitle() {
+		return outTitle;
+	}
 
-		public void setOutPrice(float outPrice) {
-			this.outPrice = outPrice;
-		}
+	public void setOutTitle(String outTitle) {
+		this.outTitle = outTitle;
+	}
 
-		public Integer getOutSize() {
-			return outSize;
-		}
+	public float getOutPrice() {
+		return outPrice;
+	}
 
-		public void setOutSize(Integer outSize) {
-			this.outSize = outSize;
-		}
+	public void setOutPrice(float outPrice) {
+		this.outPrice = outPrice;
+	}
 
-		public Integer getOutType() {
-			return outType;
-		}
+	public Integer getOutSize() {
+		return outSize;
+	}
 
-		public void setOutType(Integer outType) {
-			this.outType = outType;
-		}
+	public void setOutSize(Integer outSize) {
+		this.outSize = outSize;
+	}
 
-			private String outTitle;
+	public Integer getOutType() {
+		return outType;
+	}
 
-		    private float outPrice;
+	public void setOutType(Integer outType) {
+		this.outType = outType;
+	}
 
-		    //商品数量
-		    private Integer outSize;
+	private String outTitle;
 
-		    private Integer outType;
+	private float outPrice;
+
+	// 商品数量
+	private Integer outSize;
+
+	private Integer outType;
 }

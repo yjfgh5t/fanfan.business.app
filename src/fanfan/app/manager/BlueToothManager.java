@@ -160,7 +160,7 @@ public class BlueToothManager {
 				// 蓝牙绑定
 				case BluetoothDevice.ACTION_BOND_STATE_CHANGED:
 					device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-					if (device.getAddress().equals(currDevice.getAddress())) {
+					if (currDevice != null && device.getAddress().equals(currDevice.getAddress())) {
 						state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1);
 						switch (state) {
 						// 取消绑定
@@ -176,26 +176,32 @@ public class BlueToothManager {
 					break;
 				// 蓝牙绑定输入PIN码
 				case BluetoothDevice.ACTION_PAIRING_REQUEST:
-					String code = BlueOldUtils.getInstance().getCode(currDevice);
-					try {
-						BlueOldUtils.getInstance().setPinCode(currDevice, code);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (currDevice != null) {
+						String code = BlueOldUtils.getInstance().getCode(currDevice);
+						try {
+							BlueOldUtils.getInstance().setPinCode(currDevice, code);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					break;
 				// 蓝牙链接
 				case BluetoothDevice.ACTION_ACL_CONNECTED:
-					device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-					if (device.getAddress().equals(currDevice.getAddress())) {
-						utilListener.onConnected(currDevice);
+					if (currDevice != null) {
+						device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+						if (device.getAddress().equals(currDevice.getAddress())) {
+							utilListener.onConnected(currDevice);
+						}
 					}
 					break;
 				// 蓝牙取消链接
 				case BluetoothDevice.ACTION_ACL_DISCONNECTED:
-					device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-					if (device.getAddress().equals(currDevice.getAddress())) {
-						utilListener.onDisConnected(currDevice);
+					if (currDevice != null) {
+						device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+						if (device.getAddress().equals(currDevice.getAddress())) {
+							utilListener.onDisConnected(currDevice);
+						}
 					}
 					break;
 				}
