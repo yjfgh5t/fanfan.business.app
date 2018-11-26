@@ -71,6 +71,7 @@ public class PrintManager {
 			PrintUtils.selectCommand(PrintUtils.LINE_SPACING_DEFAULT);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_CENTER);
 			PrintUtils.selectCommand(PrintUtils.BOLD);
+			PrintUtils.selectCommand(PrintUtils.DOUBLE_HEIGHT);
 			PrintUtils.printText(SPUtils.getInstance().getString(SPConstant.shopName, "饭饭点餐") + "\n");
 			PrintUtils.printText(PrintUtils.printTwoData("排队号：#" + printModel.getOrderDateNum(),
 					"桌号：" + printModel.getOrderDeskNum()) + "\n\n");
@@ -79,6 +80,7 @@ public class PrintManager {
 			PrintUtils
 					.printText("备注：" + printModel.getOrderRemark() + " 【" + printModel.getOrderTypeText() + "】" + "\n");
 			PrintUtils.selectCommand(PrintUtils.NORMAL);
+			PrintUtils.selectCommand(PrintUtils.DOUBLE_HEIGHT);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
 			PrintUtils.printText("--------------------------------\n");
 			PrintUtils.selectCommand(PrintUtils.BOLD);
