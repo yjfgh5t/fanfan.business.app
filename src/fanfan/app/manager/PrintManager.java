@@ -93,7 +93,7 @@ public class PrintManager {
 					// 商品总数量
 					if (detail.getOutType() == OrderDetailPrintModel.TYPE_COMMODITY
 							|| detail.getOutType().equals(OrderDetailPrintModel.TYPE_COMMODITY_NORMS)) {
-						totalSize++;
+						totalSize += detail.getOutSize();
 					}
 					// outType=6时未餐盒 不需要打印数量
 					String outSize = detail.getOutType().equals(OrderDetailPrintModel.TYPE_PACKAGE) ? ""
