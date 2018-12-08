@@ -5,7 +5,6 @@ import com.tencent.smtt.sdk.QbSdk;
 import android.content.Intent;
 import android.util.Log;
 import fanfan.app.constant.SPConstant;
-import fanfan.app.manager.VersionManager;
 import fanfan.app.service.ForegroundService;
 import fanfan.app.util.SPUtils;
 
@@ -22,9 +21,6 @@ public class Application extends android.app.Application {
 
 			// 初始设置数据
 			intiData();
-
-			// 刷新Html版本
-			VersionManager.getInstrance().refshHtmlVersion();
 
 		} catch (Exception ex) {
 			Log.e("应用启动异常", ex.getLocalizedMessage());

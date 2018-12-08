@@ -15,6 +15,8 @@ import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -153,6 +155,24 @@ public final class Utils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 获取App版本
+	 * 
+	 * @return
+	 */
+	public static String getAppVersion() {
+		try {
+			PackageInfo packageInfo = getApp().getPackageManager().getPackageInfo(getApp().getPackageName(), 0);
+			if (packageInfo != null) {
+				return packageInfo.versionName;
+			}
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	static ActivityLifecycleImpl getActivityLifecycle() {

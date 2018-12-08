@@ -12,9 +12,7 @@ import com.tencent.android.tpush.XGPushManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -25,6 +23,7 @@ import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.BlueToothManager;
 import fanfan.app.manager.OkHttpManager;
 import fanfan.app.manager.PrintManager;
+import fanfan.app.manager.VersionManager;
 import fanfan.app.model.APIResponse;
 import fanfan.app.model.OrderPrintModel;
 import fanfan.app.model.PictureOptionModel;
@@ -329,16 +328,12 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			if (FileUtils.isFile(SPConstant.sdCardWWWPath + "/fanfan.apk")) {
 				boolean hasInstall = false;
 				// 当前安装apk和服务apk版本是否一致
-				try {
-					PackageInfo packageInfo = webViewActivity.getPackageManager()
-							.getPackageInfo(webViewActivity.getPackageName(), 0);
-					if (packageInfo != null) {
-						hasInstall = !packageInfo.versionName
-								.equals(SPUtils.getInstance().getString(SPConstant.downLoadAPKVersion));
-					}
-				} catch (NameNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				String version = Utils.getAppVersion();
+				hasInstall = !version.equals(SPUtils.getInstance().getString(SPConstant.downLoadAPKVersion));
+				// 没有新版本安装时 检查服务是否有新版本安装
+				if (!hasInstall) {
+					// 刷新Html版本
+					VersionManager.getInstrance().refshHtmlVersion();
 				}
 				webViewCallBack(hasInstall ? "true" : "false", callBackKey);
 			}
@@ -416,7 +411,12 @@ public class JavaScriptImpl implements JavaScriptAPI {
 				webViewCallBack("true", callBackKey);
 			}
 		}
+	}
 
+	@Override
+	public void refreshView() {
+
+		webView.loadUrl(UrlConstant.indexUrl);
 	}
 
 	// 判断app是否安装

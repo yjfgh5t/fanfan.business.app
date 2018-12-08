@@ -13,7 +13,6 @@ import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.BlueToothManager;
-import fanfan.app.manager.VersionManager;
 import fanfan.app.receiver.ForegroundReceiver;
 import fanfan.app.util.SPUtils;
 import fanfan.app.view.webview.JavaScriptAPI;
@@ -99,11 +98,7 @@ public class WebViewActivity extends Activity {
 	@SuppressLint("NewApi")
 	private void initWebView() {
 		// 加载Url地址
-		if (CodeConstant.Is_Dev) {
-			webView.loadUrl(UrlConstant.test_domain);
-		} else {
-			webView.loadUrl(VersionManager.getInstrance().getIndexPath());
-		}
+		webView.loadUrl(UrlConstant.indexUrl);
 
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
