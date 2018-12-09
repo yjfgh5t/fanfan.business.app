@@ -55,6 +55,11 @@ public class SPConstant {
 	public static final String blueToothConnect = "sp_blue_tooth_connect";
 
 	/**
+	 * 登录令牌
+	 */
+	public static final String authTokenKey = "sp_auth_token_key";
+
+	/**
 	 * domain地址
 	 */
 	public static final String httpPath = "sp_http_path";

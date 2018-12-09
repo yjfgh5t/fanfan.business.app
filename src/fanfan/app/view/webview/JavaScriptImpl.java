@@ -328,8 +328,10 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			if (FileUtils.isFile(SPConstant.sdCardWWWPath + "/fanfan.apk")) {
 				boolean hasInstall = false;
 				// 当前安装apk和服务apk版本是否一致
-				String version = Utils.getAppVersion();
-				hasInstall = !version.equals(SPUtils.getInstance().getString(SPConstant.downLoadAPKVersion));
+				String downLoadVersion = SPUtils.getInstance().getString(SPConstant.downLoadAPKVersion);
+				if (!StringUtils.isTrimEmpty(downLoadVersion)) {
+					hasInstall = !downLoadVersion.equals(Utils.getAppVersion());
+				}
 				// 没有新版本安装时 检查服务是否有新版本安装
 				if (!hasInstall) {
 					// 刷新Html版本

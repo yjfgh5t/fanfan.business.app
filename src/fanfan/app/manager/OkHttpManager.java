@@ -2,21 +2,17 @@ package fanfan.app.manager;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import com.alibaba.fastjson.JSONObject;
-
-import fanfan.app.model.APIResponse;
+import fanfan.app.constant.SPConstant;
 import fanfan.app.model.HeadModel;
 import fanfan.app.model.Response;
 import fanfan.app.util.NetworkUtils;
-import okhttp3.Call;
-import okhttp3.Callback;
+import fanfan.app.util.SPUtils;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -34,10 +30,10 @@ public class OkHttpManager {
 			return instance;
 		}
 
-		instance = new OkHttpManager(); 
+		instance = new OkHttpManager();
 
-		okHttpClient = new OkHttpClient().newBuilder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(180, TimeUnit.SECONDS)
-				.writeTimeout(180, TimeUnit.SECONDS).build();
+		okHttpClient = new OkHttpClient().newBuilder().connectTimeout(30, TimeUnit.SECONDS)
+				.readTimeout(180, TimeUnit.SECONDS).writeTimeout(180, TimeUnit.SECONDS).build();
 
 		return instance;
 	}
@@ -58,9 +54,9 @@ public class OkHttpManager {
 	 * @param url
 	 * @return
 	 */
-	public <T> void get(final String url,final Map<String, Object>  params,final Response<T> response) {
-			Request request = buildRequest(url, "GET", params);
-			doCall(request,response);
+	public <T> void get(final String url, final Map<String, Object> params, final Response<T> response) {
+		Request request = buildRequest(url, "GET", params);
+		doCall(request, response);
 	}
 
 	/**
@@ -79,19 +75,19 @@ public class OkHttpManager {
 	 * @param url
 	 * @return
 	 */
-	public <T> void post(final String url,final Map<String, Object> params,final Response<T> response) {
+	public <T> void post(final String url, final Map<String, Object> params, final Response<T> response) {
 		Request request = buildRequest(url, "POST", params);
-		doCall(request,response);
+		doCall(request, response);
 	}
 
-	private <T> void doCall(final Request request,final Response<T> response) {
-		if(request==null) {
+	private <T> void doCall(final Request request, final Response<T> response) {
+		if (request == null) {
 			response.onFailure(null, new IOException("无法连接网络"));
 			return;
 		}
 		okHttpClient.newCall(request).enqueue(response);
 	}
-	
+
 	/**
 	 * 构建Reques对象
 	 * 
@@ -101,17 +97,20 @@ public class OkHttpManager {
 	 */
 	private Request buildRequest(String url, String method, Map<String, Object> params) {
 
-		//验证是否有网咯
-		if(!NetworkUtils.isConnected()) {
+		// 验证是否有网咯
+		if (!NetworkUtils.isConnected()) {
 			return null;
 		}
-		
-		if(params==null) {
+
+		if (params == null) {
 			params = new HashMap<>();
 		}
-		
+
+		// 基础信息
 		params.put("head.base", new HeadModel().toString());
-		
+		// 登录令牌
+		params.put("head.x-auth-token", SPUtils.getInstance().getString(SPConstant.authTokenKey, ""));
+
 		Request.Builder requestBuilder = new Request.Builder();
 
 		RequestBody formBody = null;
@@ -133,20 +132,22 @@ public class OkHttpManager {
 					formBody = RequestBody.create(MediaType.parse("application/json"),
 							params.get("content").toString());
 					break;
-				//下载文件
+				// 下载文件
 				case "file":
-					//formBody = RequestBody.create(MediaType.parse("application/octet-stream"),"");
+					// formBody =
+					// RequestBody.create(MediaType.parse("application/octet-stream"),"");
 					params.put("head.is-file", "true");
 					break;
-				//上传文件
+				// 上传文件
 				case "uploadFile":
-					File file = (File)params.get("content");
-					RequestBody requestFileBody = RequestBody.create(MediaType.parse("application/octet-stream"),file);
-					formBody = new MultipartBody.Builder().addFormDataPart("file", file.getName(), requestFileBody).build();
+					File file = (File) params.get("content");
+					RequestBody requestFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+					formBody = new MultipartBody.Builder().addFormDataPart("file", file.getName(), requestFileBody)
+							.build();
 					break;
 				}
-				
-				//移除 防止拼接至参数
+
+				// 移除 防止拼接至参数
 				params.remove("content-type");
 			}
 
@@ -191,7 +192,7 @@ public class OkHttpManager {
 				}
 			}
 		}
-		
+
 		requestBuilder.url(url);
 		requestBuilder.method(method, formBody);
 		return requestBuilder.build();
