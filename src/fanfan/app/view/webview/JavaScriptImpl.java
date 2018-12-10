@@ -28,6 +28,7 @@ import fanfan.app.model.APIResponse;
 import fanfan.app.model.OrderPrintModel;
 import fanfan.app.model.PictureOptionModel;
 import fanfan.app.model.Response;
+import fanfan.app.util.EncryptUtils;
 import fanfan.app.util.FileUtils;
 import fanfan.app.util.PhotoUtil;
 import fanfan.app.util.SPUtils;
@@ -413,6 +414,26 @@ public class JavaScriptImpl implements JavaScriptAPI {
 				webViewCallBack("true", callBackKey);
 			}
 		}
+	}
+
+	/**
+	 * 获取登录的Code
+	 */
+	@SuppressLint("NewApi")
+	@Override
+	@JavascriptInterface
+	public void getLoginCode(final String timeSpan, final String callBackKey) {
+		// TODO Auto-generated method stub
+		String userStr = SPUtils.getInstance().getString(SPConstant.userInfo, "");
+		String code = "";
+		if (!StringUtils.isEmpty(userStr)) {
+			JSONObject userObject = JSONObject.parseObject(userStr);
+			Integer userId = userObject.getInteger("userId");
+			String pwd = userObject.getString("code");
+			String emptyStr = String.format("%d%s%s%s", userId, "!@#QWE", timeSpan, pwd);
+			code = EncryptUtils.simpleMD5Encrypt(emptyStr);
+		}
+		webViewCallBack(code, callBackKey);
 	}
 
 	@Override

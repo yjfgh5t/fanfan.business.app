@@ -129,6 +129,13 @@ public interface JavaScriptAPI {
 	void uploadFile(final File file);
 
 	/**
+	 * 获取登录Code
+	 * 
+	 * @param pwd
+	 */
+	void getLoginCode(final String timeSpan, final String callBackKey);
+
+	/**
 	 * 退出登录
 	 * 
 	 * @param userId
