@@ -86,19 +86,20 @@ public interface JavaScriptAPI {
 	void scanQRCode(String callBackKey);
 
 	/**
-	 * 扫码返回
-	 * 
-	 * @param data
-	 */
-	void resultScanQRCode(String data);
-
-	/**
 	 * 打印
 	 * 
 	 * @param orderJsonString
 	 * @param callBackKey
 	 */
-	void print(final String orderJsonString, String callBackKey);
+	void print(final String jsonString, final String printType, String callBackKey);
+	
+	/**
+	 * 保存图片
+	 * @param imgData
+	 * @param name
+	 * @param callBackKey
+	 */
+	void saveImage(final String imgData,final String name, String callBackKey);
 
 	/**
 	 * 检查或者安装APK

@@ -174,6 +174,11 @@ public class PrintUtils {
 	 * 切纸命令
 	 */
 	public static final byte[] CUTE_PAPER = { 29, 86, 0 };
+	
+	/**
+	 * 图片指令
+	 */
+	public static final byte[] IMAGE = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1B, 0x40, 0x1B, 0x33, 0x00};
 
 	/**
 	 * 设置行间距

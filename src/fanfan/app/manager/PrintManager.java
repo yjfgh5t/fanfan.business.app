@@ -39,7 +39,7 @@ public class PrintManager {
 	 */
 	public boolean printOrder(final OrderPrintModel printModel) {
 		// 蓝牙打印
-		boolean printState = blueToothPrint(printModel);
+		boolean printState = blueToothOrderPrint(printModel);
 
 		if (!printState) {
 			MediaManager.getInstrance().playMedia(MediaType.printFailByBlueMedia);
@@ -47,15 +47,41 @@ public class PrintManager {
 
 		return printState;
 	}
-
+	
+	public boolean printImg(final byte[] imgData) {
+		try {
+			BluetoothSocket socket = BlueOldUtils.getInstance().getConnectSocket();
+			if(socket !=null) {
+				PrintUtils.setOutputStream(socket.getOutputStream());
+			}else {
+				return false;
+			}
+			// 打印失败
+			if (!PrintUtils.selectCommand(PrintUtils.RESET)) {
+				return false;
+			}
+			// 打印图片指令
+			PrintUtils.selectCommand(PrintUtils.IMAGE);
+			// 开始打印
+			PrintUtils.selectCommand(imgData);
+			// 重置打印机
+			PrintUtils.selectCommand(PrintUtils.RESET);
+			PrintUtils.printText("\n\n");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	/**
-	 * 执行WebView打印
+	 * 蓝牙订单打印
 	 * 
 	 * @param context
 	 * @param webView
 	 */
 	@SuppressLint("NewApi")
-	public boolean blueToothPrint(OrderPrintModel printModel) {
+	private boolean blueToothOrderPrint(OrderPrintModel printModel) {
 		try {
 			// 获取Socket
 			BluetoothSocket socket = BlueOldUtils.getInstance().getConnectSocket();
@@ -119,6 +145,15 @@ public class PrintManager {
 			e.printStackTrace();
 		}
 
+		return false;
+	}
+	
+	/**
+	 * 图片打印
+	 * @return
+	 */
+	private boolean blueToothImagePrint() {
+		
 		return false;
 	}
 

@@ -13,8 +13,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import fanfan.app.constant.CodeConstant;
@@ -202,21 +205,27 @@ public class JavaScriptImpl implements JavaScriptAPI {
 		});
 	}
 
-	@Override
-	public void resultScanQRCode(String data) {
-		webViewCallBack(data, sacnQRCodeCallbackKey);
-	}
-
 	/**
 	 * 打印
 	 */
 	@Override
 	@JavascriptInterface
-	public void print(final String orderJsonString, final String callBackKey) {
+	public void print(final String jsonString,final String printType, final String callBackKey) {
 		new Handler().post(new Runnable() {
 			public void run() {
-				OrderPrintModel printModel = JSONObject.parseObject(orderJsonString, OrderPrintModel.class);
-				boolean success = PrintManager.getInstrance().printOrder(printModel);
+				boolean success = false;
+				switch(printType) {
+					// 打印订单
+					case "order":
+						OrderPrintModel printModel = JSONObject.parseObject(jsonString, OrderPrintModel.class);
+						success = PrintManager.getInstrance().printOrder(printModel);
+						break;
+					// 打印图片
+					case "img":
+						byte[] imgData = Base64.decode(jsonString, Base64.DEFAULT);
+						success = PrintManager.getInstrance().printImg(imgData);
+						break;
+				}
 				webViewCallBack(success ? "true" : "false", callBackKey);
 			}
 		});
@@ -351,6 +360,20 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			webViewActivity.startActivity(intent);
 		}
 	}
+	
+
+
+	@SuppressLint("NewApi")
+	@Override
+	@JavascriptInterface
+	public void saveImage(String imgData, String name, String callBackKey) {
+		// TODO Auto-generated method stub
+		byte[] data = Base64.decode(imgData, Base64.DEFAULT);
+		Bitmap bitmap = null;
+		bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+		PhotoUtil.saveBmp2Gallery(bitmap, name, webViewActivity);
+		webViewCallBack("true", callBackKey);
+	}
 
 	/**
 	 * 加载信鸽
@@ -403,15 +426,27 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			return;
 		}
 
-		Uri uri = Uri.parse(url);
-		String host = uri.getHost();
-		String scheme = uri.getScheme();
-		// host 和 scheme 都不能为null
-		if (!StringUtils.isEmpty(host) && !StringUtils.isEmpty(scheme)) {
+		//拨打电话
+		if(url.indexOf("tel://")!=-1) {
+			String mobile = url.substring(url.lastIndexOf("://") + 3);
+			Uri uri = Uri.parse("tel:"+mobile);
 			Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-			if (isInstall(intent)) {
-				webViewActivity.startActivity(intent);
-				webViewCallBack("true", callBackKey);
+			webViewActivity.startActivity(intent);
+			webViewCallBack("true", callBackKey);
+		}else {
+			//打开其它App
+			Uri uri = Uri.parse(url);
+			String host = uri.getHost();
+			String scheme = uri.getScheme();
+			// host 和 scheme 都不能为null
+			if (!StringUtils.isEmpty(host) && !StringUtils.isEmpty(scheme)) {
+				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+				if (isInstall(intent)) {
+					webViewActivity.startActivity(intent);
+					webViewCallBack("true", callBackKey);
+				}else {
+					webViewCallBack("false", callBackKey);
+				}
 			}
 		}
 	}
@@ -505,7 +540,7 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			break;
 		case CodeConstant.Code_San_QRCode:
 			if (data != null && data.hasExtra("result")) {
-				this.resultScanQRCode(data.getStringExtra("result"));
+				webViewCallBack(data.getStringExtra("result"), sacnQRCodeCallbackKey);
 			}
 			break;
 		}

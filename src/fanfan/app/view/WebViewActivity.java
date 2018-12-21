@@ -1,11 +1,15 @@
 package fanfan.app.view;
 
 import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.view.View;
@@ -110,6 +114,19 @@ public class WebViewActivity extends Activity {
 		javaScriptAPI = new JavaScriptImpl(webView, this);
 
 		webView.addJavascriptInterface(javaScriptAPI, "android");
+		
+		webView.setWebChromeClient(new WebChromeClient() {
+			@Override 
+			public void onReceivedIcon(WebView view, Bitmap icon) { 
+				super.onReceivedIcon(view, icon);
+			}
+			
+			@Override 
+			public void onGeolocationPermissionsShowPrompt(String origin,GeolocationPermissionsCallback callback) { 
+				callback.invoke(origin, true, false); 
+				super.onGeolocationPermissionsShowPrompt(origin, callback);
+			}
+		});
 
 		// 绑定信鸽
 		javaScriptAPI.bindXG("");

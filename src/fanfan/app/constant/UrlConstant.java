@@ -32,8 +32,8 @@ public class UrlConstant {
 
 	static {
 		if (CodeConstant.Is_Dev) {
-			domain = "http://192.168.1.10:8081/api/";
-			indexUrl = "http://192.168.1.10:7061";
+			domain = "http://192.168.4.47:8081/api/";
+			indexUrl = "http://192.168.4.47:7061";
 			// 下载地址
 			htmlDownload = domain + "/info/www.zip";
 			apkDownload = domain + "/info/fanfan.apk";
@@ -41,8 +41,8 @@ public class UrlConstant {
 			domain = "http://www.wxcard.com.cn/api/";
 			indexUrl = VersionManager.getInstrance().getIndexPath();
 			// 下载地址
-			htmlDownload = domain + "http://static.wxcard.com.cn/www.zip";
-			apkDownload = domain + "http://static.wxcard.com.cn/fanfan.apk";
+			htmlDownload = "http://static.wxcard.com.cn/www.zip";
+			apkDownload = "http://static.wxcard.com.cn/fanfan.apk";
 		}
 
 		loginUrl = domain + "user/login";
