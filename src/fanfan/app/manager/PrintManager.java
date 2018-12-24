@@ -5,11 +5,13 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothSocket;
+import android.graphics.Bitmap;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.model.OrderDetailPrintModel;
 import fanfan.app.model.OrderPrintModel;
 import fanfan.app.model.menum.MediaType;
 import fanfan.app.util.BlueOldUtils;
+import fanfan.app.util.PicFromPrintUtils;
 import fanfan.app.util.PrintUtils;
 import fanfan.app.util.SPUtils;
 
@@ -47,13 +49,24 @@ public class PrintManager {
 
 		return printState;
 	}
-	
-	public boolean printImg(final byte[] imgData) {
+
+	public boolean printImg(final Bitmap bit) {
+		// 蓝牙打印
+		boolean printState = blueToothImgPrint(bit);
+
+		if (!printState) {
+			MediaManager.getInstrance().playMedia(MediaType.printFailByBlueMedia);
+		}
+
+		return printState;
+	}
+
+	private boolean blueToothImgPrint(final Bitmap bit) {
 		try {
 			BluetoothSocket socket = BlueOldUtils.getInstance().getConnectSocket();
-			if(socket !=null) {
+			if (socket != null) {
 				PrintUtils.setOutputStream(socket.getOutputStream());
-			}else {
+			} else {
 				return false;
 			}
 			// 打印失败
@@ -62,18 +75,23 @@ public class PrintManager {
 			}
 			// 打印图片指令
 			PrintUtils.selectCommand(PrintUtils.IMAGE);
+			// 转二进制
+			byte[] imgData = PicFromPrintUtils.draw2PxPoint(bit);
 			// 开始打印
 			PrintUtils.selectCommand(imgData);
-			// 重置打印机
-			PrintUtils.selectCommand(PrintUtils.RESET);
-			PrintUtils.printText("\n\n");
+			// 走纸
+			PrintUtils.selectCommand(PrintUtils.END);
+			// 切纸
+			PrintUtils.selectCommand(PrintUtils.CUTE_PAPER);
+
+			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 蓝牙订单打印
 	 * 
@@ -99,8 +117,9 @@ public class PrintManager {
 			PrintUtils.selectCommand(PrintUtils.BOLD);
 			PrintUtils.selectCommand(PrintUtils.DOUBLE_HEIGHT);
 			PrintUtils.printText(SPUtils.getInstance().getString(SPConstant.shopName, "饭饭点餐") + "\n");
-			PrintUtils.printText(PrintUtils.printTwoData("排队号：#" + printModel.getOrderDateNum(),
-					"桌号：" + printModel.getOrderDeskNum()) + "\n\n");
+			PrintUtils.printText(
+					PrintUtils.printTwoData("排队号：#" + printModel.getOrderDateNum(), printModel.getOrderDeskNum())
+							+ "\n\n");
 			PrintUtils.selectCommand(PrintUtils.DOUBLE_HEIGHT_WIDTH);
 			PrintUtils.selectCommand(PrintUtils.ALIGN_LEFT);
 			PrintUtils
@@ -137,6 +156,8 @@ public class PrintManager {
 			PrintUtils.printText("--------------------------------\n");
 			PrintUtils.printText(PrintUtils.printTwoData("订单编号:", printModel.getOrderNum() + "\n"));
 			PrintUtils.printText(PrintUtils.printTwoData("下单时间:", printModel.getOrderTime() + "\n"));
+			PrintUtils.printText(PrintUtils.printTwoData("收货人:", "江洋（15821243531）"));
+			PrintUtils.printText("上海市松江区城鸿路222弄8号楼801室");
 			PrintUtils.printText("\n\n\n\n\n");
 			PrintUtils.selectCommand(PrintUtils.CUTE_PAPER);
 			return true;
@@ -147,13 +168,14 @@ public class PrintManager {
 
 		return false;
 	}
-	
+
 	/**
 	 * 图片打印
+	 * 
 	 * @return
 	 */
 	private boolean blueToothImagePrint() {
-		
+
 		return false;
 	}
 

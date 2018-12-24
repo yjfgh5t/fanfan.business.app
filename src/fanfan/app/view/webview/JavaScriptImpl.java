@@ -34,6 +34,7 @@ import fanfan.app.model.Response;
 import fanfan.app.util.EncryptUtils;
 import fanfan.app.util.FileUtils;
 import fanfan.app.util.PhotoUtil;
+import fanfan.app.util.PicFromPrintUtils;
 import fanfan.app.util.SPUtils;
 import fanfan.app.util.StringUtils;
 import fanfan.app.util.Utils;
@@ -210,21 +211,24 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	 */
 	@Override
 	@JavascriptInterface
-	public void print(final String jsonString,final String printType, final String callBackKey) {
+	public void print(final String jsonString, final String printType, final String callBackKey) {
 		new Handler().post(new Runnable() {
 			public void run() {
 				boolean success = false;
-				switch(printType) {
-					// 打印订单
-					case "order":
-						OrderPrintModel printModel = JSONObject.parseObject(jsonString, OrderPrintModel.class);
-						success = PrintManager.getInstrance().printOrder(printModel);
-						break;
-					// 打印图片
-					case "img":
-						byte[] imgData = Base64.decode(jsonString, Base64.DEFAULT);
-						success = PrintManager.getInstrance().printImg(imgData);
-						break;
+				switch (printType) {
+				// 打印订单
+				case "order":
+					OrderPrintModel printModel = JSONObject.parseObject(jsonString, OrderPrintModel.class);
+					success = PrintManager.getInstrance().printOrder(printModel);
+					break;
+				// 打印图片
+				case "img":
+					byte[] imgData = Base64.decode(jsonString, Base64.DEFAULT);
+					Bitmap tempBitmap = BitmapFactory.decodeByteArray(imgData, 0, imgData.length);
+					// 压缩打印机指定大小
+					tempBitmap = PicFromPrintUtils.compressBitmap(tempBitmap);
+					success = PrintManager.getInstrance().printImg(tempBitmap);
+					break;
 				}
 				webViewCallBack(success ? "true" : "false", callBackKey);
 			}
@@ -360,8 +364,6 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			webViewActivity.startActivity(intent);
 		}
 	}
-	
-
 
 	@SuppressLint("NewApi")
 	@Override
@@ -426,15 +428,15 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			return;
 		}
 
-		//拨打电话
-		if(url.indexOf("tel://")!=-1) {
+		// 拨打电话
+		if (url.indexOf("tel://") != -1) {
 			String mobile = url.substring(url.lastIndexOf("://") + 3);
-			Uri uri = Uri.parse("tel:"+mobile);
+			Uri uri = Uri.parse("tel:" + mobile);
 			Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 			webViewActivity.startActivity(intent);
 			webViewCallBack("true", callBackKey);
-		}else {
-			//打开其它App
+		} else {
+			// 打开其它App
 			Uri uri = Uri.parse(url);
 			String host = uri.getHost();
 			String scheme = uri.getScheme();
@@ -444,7 +446,7 @@ public class JavaScriptImpl implements JavaScriptAPI {
 				if (isInstall(intent)) {
 					webViewActivity.startActivity(intent);
 					webViewCallBack("true", callBackKey);
-				}else {
+				} else {
 					webViewCallBack("false", callBackKey);
 				}
 			}
