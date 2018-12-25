@@ -475,8 +475,19 @@ public class JavaScriptImpl implements JavaScriptAPI {
 
 	@Override
 	public void refreshView() {
-
-		webView.loadUrl(UrlConstant.indexUrl);
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		webView.post(new Runnable() {
+			@Override
+			public void run() {
+				webView.clearCache(true);
+				webView.loadUrl(UrlConstant.indexUrl + "?v=refresh");
+			}
+		});
 	}
 
 	// 判断app是否安装

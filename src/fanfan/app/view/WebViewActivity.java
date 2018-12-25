@@ -101,6 +101,13 @@ public class WebViewActivity extends Activity {
 	@SuppressWarnings("static-access")
 	@SuppressLint("NewApi")
 	private void initWebView() {
+		// 防止未解压完 就访问
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// 加载Url地址
 		webView.loadUrl(UrlConstant.indexUrl);
 
@@ -114,16 +121,16 @@ public class WebViewActivity extends Activity {
 		javaScriptAPI = new JavaScriptImpl(webView, this);
 
 		webView.addJavascriptInterface(javaScriptAPI, "android");
-		
+
 		webView.setWebChromeClient(new WebChromeClient() {
-			@Override 
-			public void onReceivedIcon(WebView view, Bitmap icon) { 
+			@Override
+			public void onReceivedIcon(WebView view, Bitmap icon) {
 				super.onReceivedIcon(view, icon);
 			}
-			
-			@Override 
-			public void onGeolocationPermissionsShowPrompt(String origin,GeolocationPermissionsCallback callback) { 
-				callback.invoke(origin, true, false); 
+
+			@Override
+			public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissionsCallback callback) {
+				callback.invoke(origin, true, false);
 				super.onGeolocationPermissionsShowPrompt(origin, callback);
 			}
 		});

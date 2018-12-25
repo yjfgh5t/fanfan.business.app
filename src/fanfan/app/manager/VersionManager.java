@@ -35,9 +35,6 @@ public class VersionManager {
 	public static VersionManager getInstrance() {
 		if (instance == null) {
 			instance = new VersionManager();
-			// 创建文件夹
-			FileUtils.createOrExistsDir(SPConstant.sdCardWWWPath);
-			FileUtils.createOrExistsDir(SPConstant.sdCardPath + "/temp/www");
 		}
 		return instance;
 	}
@@ -70,11 +67,13 @@ public class VersionManager {
 
 		// 未安装 /文件被删除
 		if (getCurrentHtmlVersion().equals("0.0.0") || !FileUtils.isDir(SPConstant.sdCardWWWPath)) {
+			// 创建文件夹
+			clearAndCreateDir();
 			// copy assets至SDCard
 			Boolean success = ResourceUtils.copyFileFromAssets(assetsPath, SPConstant.sdCardPath + "/temp/www.zip");
 			if (success) {
 				// 解压文件
-				if (unHtmlZip(SPConstant.htmlInstallVersion, "")) {
+				if (unHtmlZip(SPConstant.htmlInstallVersion, false)) {
 					isRefeash = false;
 					// 刷新是否需要更新版本
 					refshHtmlVersion();
@@ -141,7 +140,7 @@ public class VersionManager {
 					if (writeSuccess && FileUtils.isFile(SPConstant.sdCardPath + tempFilePath)) {
 						// 解压文件
 						if (downloadType == 1) {
-							unHtmlZip(version.getHtmlVersion(), version.getAndroidVersion());
+							unHtmlZip(version.getHtmlVersion(), true);
 						} else {
 							// 删除www目录下原有的fanfan.apk文件
 							FileUtils.deleteFile(SPConstant.sdCardWWWPath + "/fanfan.apk");
@@ -169,7 +168,7 @@ public class VersionManager {
 	 * @param androidVersion
 	 * @return
 	 */
-	private boolean unHtmlZip(String htmlVersion, String androidVersion) {
+	private boolean unHtmlZip(String htmlVersion, boolean refresh) {
 		try {
 			// 删除 temp/www 文件
 			FileUtils.deleteAllInDir(SPConstant.sdCardPath + "/temp/www");
@@ -182,7 +181,7 @@ public class VersionManager {
 					// 设置版本
 					SPUtils.getInstance().put(SPConstant.htmlVersion, htmlVersion);
 					// 刷新webview
-					if (JavaScriptImpl.getInstrance() != null) {
+					if (JavaScriptImpl.getInstrance() != null && refresh) {
 						JavaScriptImpl.getInstrance().refreshView();
 					}
 					return true;
@@ -196,4 +195,12 @@ public class VersionManager {
 		return false;
 	}
 
+	private static void clearAndCreateDir() {
+		// 清空www文件夹
+		FileUtils.deleteAllInDir(SPConstant.sdCardPath);
+		// 创建文件夹
+		FileUtils.createOrExistsDir(SPConstant.sdCardWWWPath);
+		FileUtils.createOrExistsDir(SPConstant.sdCardPath + "/temp/www");
+
+	}
 }

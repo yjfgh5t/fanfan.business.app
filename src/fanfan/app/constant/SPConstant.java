@@ -22,7 +22,7 @@ public class SPConstant {
 	/**
 	 * html当前安装包自带版本
 	 */
-	public static final String htmlInstallVersion = "1.3.6";
+	public static final String htmlInstallVersion = "1.3.7";
 
 	/**
 	 * 下载apk安装包版本
