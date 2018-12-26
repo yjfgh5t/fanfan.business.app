@@ -5,6 +5,7 @@ import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallbac
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebView;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
@@ -19,12 +21,14 @@ import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.BlueToothManager;
 import fanfan.app.receiver.ForegroundReceiver;
 import fanfan.app.util.SPUtils;
+import fanfan.app.view.permission.PermissionHelper;
+import fanfan.app.view.permission.PermissionInterface;
 import fanfan.app.view.webview.JavaScriptAPI;
 import fanfan.app.view.webview.JavaScriptImpl;
 import fanfan.app.view.webview.X5WebView;
 import fanfan.business.app.R;
 
-public class WebViewActivity extends Activity {
+public class WebViewActivity extends Activity implements PermissionInterface {
 
 	X5WebView webView;
 
@@ -35,21 +39,17 @@ public class WebViewActivity extends Activity {
 	public static int activity_result_scan = 2;
 
 	private ForegroundReceiver foregroundReceiver;
+	
+	private PermissionHelper mPermissionHelper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_web_view);
-		webView = (X5WebView) findViewById(R.id.full_web_webview);
-
-		// 设置信鸽初始化信息
-		initXG();
-
-		// WebView初始化信息
-		initWebView();
-
-		// 蓝牙初始化信息
-		BlueToothManager.getInstrance().init(this);
+		
+		//初始化并发起权限申请
+        mPermissionHelper = new PermissionHelper(this, this);
+        mPermissionHelper.requestPermissions();
 	}
 
 	/**
@@ -90,12 +90,74 @@ public class WebViewActivity extends Activity {
 		// super.onBackPressed();
 		javaScriptAPI.webViewCallBack("回退", CodeConstant.Notify_Msg_CallKey + ".back-key");
 	}
-
+	
+	/**
+	 * 销毁
+	 */
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		unregisterReceiver(foregroundReceiver);
 		super.onDestroy();
+	}
+	
+	@Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(mPermissionHelper.requestPermissionsResult(requestCode, permissions, grantResults)){
+			//权限请求结果，并已经处理了该回调
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+	
+	@Override
+	public int getPermissionsRequestCode() {
+		// TODO Auto-generated method stub
+		return 999;
+	}
+
+	@Override
+	public String[] getPermissions() {
+		// TODO Auto-generated method stub
+		return new String[]{
+				// 创建文件夹权限
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                // 拨打电话权限
+                Manifest.permission.READ_PHONE_STATE,
+                // 地理位置权限
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                // 相机权限
+                Manifest.permission.CAMERA
+        };
+	}
+
+	@Override
+	public void requestPermissionsSuccess() {
+		// TODO Auto-generated method stub
+		initView();
+	}
+
+	@Override
+	public void requestPermissionsFail() {
+		// TODO Auto-generated method stub
+		finish();
+		System.exit(0);
+	}
+	
+	/**
+	 * 视图初始化
+	 */
+	private void initView() {
+		webView = (X5WebView) findViewById(R.id.full_web_webview);
+
+		// 设置信鸽初始化信息
+		initXG();
+
+		// WebView初始化信息
+		initWebView();
+
+		// 蓝牙初始化信息
+		BlueToothManager.getInstrance().init(this);
 	}
 
 	@SuppressWarnings("static-access")
