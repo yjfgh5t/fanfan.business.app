@@ -92,14 +92,15 @@ public interface JavaScriptAPI {
 	 * @param callBackKey
 	 */
 	void print(final String jsonString, final String printType, String callBackKey);
-	
+
 	/**
 	 * 保存图片
+	 * 
 	 * @param imgData
 	 * @param name
 	 * @param callBackKey
 	 */
-	void saveImage(final String imgData,final String name, String callBackKey);
+	void saveImage(final String imgData, final String name, String callBackKey);
 
 	/**
 	 * 检查或者安装APK
@@ -172,4 +173,12 @@ public interface JavaScriptAPI {
 	 * 刷新页面
 	 */
 	void refreshView();
+
+	/**
+	 * 权限
+	 * 
+	 * @param permissName
+	 * @param callBackKey
+	 */
+	void permission(String permissName, String callBackKey);
 }

@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushManager;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -196,14 +197,17 @@ public class JavaScriptImpl implements JavaScriptAPI {
 	@Override
 	@JavascriptInterface
 	public void scanQRCode(String callBackKey) {
-		sacnQRCodeCallbackKey = callBackKey;
-		// TODO Auto-generated method stub
-		new Handler().post(new Runnable() {
-			public void run() {
-				webViewActivity.startActivityForResult(new Intent(webViewActivity, ScanActivity.class),
-						CodeConstant.Code_San_QRCode);
-			}
-		});
+		// 相机权限
+		if (webViewActivity.mPermissionHelper.requestPermissions(Manifest.permission.CAMERA)) {
+			sacnQRCodeCallbackKey = callBackKey;
+			// TODO Auto-generated method stub
+			new Handler().post(new Runnable() {
+				public void run() {
+					webViewActivity.startActivityForResult(new Intent(webViewActivity, ScanActivity.class),
+							CodeConstant.Code_San_QRCode);
+				}
+			});
+		}
 	}
 
 	/**
@@ -271,8 +275,11 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			public void run() {
 				switch (optionModel.getOpenType()) {
 				case 1:
-					// 拍照
-					PhotoUtil.takePhoto(webViewActivity);
+					// 相机权限
+					if (webViewActivity.mPermissionHelper.requestPermissions(Manifest.permission.CAMERA)) {
+						// 拍照
+						PhotoUtil.takePhoto(webViewActivity);
+					}
 					break;
 				case 2:
 					// 打开相册
@@ -430,6 +437,7 @@ public class JavaScriptImpl implements JavaScriptAPI {
 
 		// 拨打电话
 		if (url.indexOf("tel://") != -1) {
+
 			String mobile = url.substring(url.lastIndexOf("://") + 3);
 			Uri uri = Uri.parse("tel:" + mobile);
 			Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -471,6 +479,15 @@ public class JavaScriptImpl implements JavaScriptAPI {
 			code = EncryptUtils.simpleMD5Encrypt(emptyStr);
 		}
 		webViewCallBack(code, callBackKey);
+	}
+
+	@SuppressLint("NewApi")
+	@Override
+	@JavascriptInterface
+	public void permission(String permissName, String callBackKey) {
+		// TODO Auto-generated method stub
+		// 获取权限
+		webViewActivity.mPermissionHelper.requestPermissions(permissName);
 	}
 
 	@Override

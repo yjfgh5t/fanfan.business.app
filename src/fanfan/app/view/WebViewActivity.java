@@ -19,6 +19,7 @@ import fanfan.app.constant.CodeConstant;
 import fanfan.app.constant.SPConstant;
 import fanfan.app.constant.UrlConstant;
 import fanfan.app.manager.BlueToothManager;
+import fanfan.app.manager.VersionManager;
 import fanfan.app.receiver.ForegroundReceiver;
 import fanfan.app.util.SPUtils;
 import fanfan.app.view.permission.PermissionHelper;
@@ -30,7 +31,7 @@ import fanfan.business.app.R;
 
 public class WebViewActivity extends Activity implements PermissionInterface {
 
-	X5WebView webView;
+	public X5WebView webView;
 
 	JavaScriptAPI javaScriptAPI;
 
@@ -39,17 +40,17 @@ public class WebViewActivity extends Activity implements PermissionInterface {
 	public static int activity_result_scan = 2;
 
 	private ForegroundReceiver foregroundReceiver;
-	
-	private PermissionHelper mPermissionHelper;
+
+	public PermissionHelper mPermissionHelper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_web_view);
-		
-		//初始化并发起权限申请
-        mPermissionHelper = new PermissionHelper(this, this);
-        mPermissionHelper.requestPermissions();
+
+		// 初始化并发起权限申请
+		mPermissionHelper = new PermissionHelper(this, this);
+		mPermissionHelper.requestPermissions();
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class WebViewActivity extends Activity implements PermissionInterface {
 		// super.onBackPressed();
 		javaScriptAPI.webViewCallBack("回退", CodeConstant.Notify_Msg_CallKey + ".back-key");
 	}
-	
+
 	/**
 	 * 销毁
 	 */
@@ -100,16 +101,17 @@ public class WebViewActivity extends Activity implements PermissionInterface {
 		unregisterReceiver(foregroundReceiver);
 		super.onDestroy();
 	}
-	
+
 	@Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(mPermissionHelper.requestPermissionsResult(requestCode, permissions, grantResults)){
-			//权限请求结果，并已经处理了该回调
-            return;
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-	
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+			@NonNull int[] grantResults) {
+		if (mPermissionHelper.requestPermissionsResult(requestCode, permissions, grantResults)) {
+			// 权限请求结果，并已经处理了该回调
+			return;
+		}
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+	}
+
 	@Override
 	public int getPermissionsRequestCode() {
 		// TODO Auto-generated method stub
@@ -119,35 +121,43 @@ public class WebViewActivity extends Activity implements PermissionInterface {
 	@Override
 	public String[] getPermissions() {
 		// TODO Auto-generated method stub
-		return new String[]{
+		return new String[] {
 				// 创建文件夹权限
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                // 拨打电话权限
-                Manifest.permission.READ_PHONE_STATE,
-                // 地理位置权限
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                // 相机权限
-                Manifest.permission.CAMERA
-        };
+				Manifest.permission.WRITE_EXTERNAL_STORAGE
+				// 拨打电话权限
+				// Manifest.permission.READ_PHONE_STATE,
+				// 地理位置权限
+				,
+				// 相机权限
+				// Manifest.permission.CAMERA
+		};
 	}
 
 	@Override
 	public void requestPermissionsSuccess() {
 		// TODO Auto-generated method stub
-		initView();
+		if (webView == null) {
+			initView();
+		}
 	}
 
 	@Override
 	public void requestPermissionsFail() {
 		// TODO Auto-generated method stub
-		finish();
-		System.exit(0);
+		if (webView == null) {
+			finish();
+			System.exit(0);
+		}
 	}
-	
+
 	/**
 	 * 视图初始化
 	 */
 	private void initView() {
+		// 刷新Html版本
+		VersionManager.getInstrance().refshHtmlVersion();
+
+		// webview控件
 		webView = (X5WebView) findViewById(R.id.full_web_webview);
 
 		// 设置信鸽初始化信息
